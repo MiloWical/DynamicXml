@@ -2,6 +2,7 @@ namespace DynamicXml.Scanner.Token
 {
     public enum TokenType
     {
+        Unspecified,
         Undefined,
         LessThanSymbol,
         GreaterThanSymbol,
@@ -11,6 +12,8 @@ namespace DynamicXml.Scanner.Token
         DoubleQuoteSymbol,
         WhitespaceSymbol,
         ColonSymbol,
+        QuestionMarkSymbol,
+        Version,
         Identifier,
         Data,
         Eof

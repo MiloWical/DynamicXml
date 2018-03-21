@@ -17,7 +17,8 @@ namespace DynamicXml.Scanner
             if (xmlData != null) _xmlData = xmlData;
         }
 
-        public void AdvanceTokenBuffer()
+        //TODO: This method is too long. Break it up.
+        public void AdvanceTokenBuffer(TokenType specifiedToken = TokenType.Unspecified)
         {
             if (_xmlData.Length == 0)
             {
@@ -25,18 +26,33 @@ namespace DynamicXml.Scanner
                 return;
             }
 
-            foreach (var tokenRegex in TokenRegexLookup.Map)
+            if (specifiedToken == TokenType.Unspecified)
             {
-                var match = tokenRegex.Value.Match(_xmlData);
+                foreach (var tokenRegex in TokenRegexLookup.Map)
+                {
+                    var match = tokenRegex.Value.Match(_xmlData);
 
-                if (!match.Success || match.Index != 0) continue;
+                    if (!match.Success || match.Index != 0) continue;
 
-                _xmlData = _xmlData.Remove(0, match.Length);
-                NextScannedToken = new ScannedToken(tokenRegex.Key, match.Value);
-                return;
+                    _xmlData = _xmlData.Remove(0, match.Length);
+                    NextScannedToken = new ScannedToken(tokenRegex.Key, match.Value);
+                    return;
+                }
+
+                NextScannedToken = new ScannedToken(TokenType.Undefined, null);
             }
+            else
+            {
+                var match = TokenRegexLookup.Map[specifiedToken].Match(_xmlData);
 
-            NextScannedToken = new ScannedToken(TokenType.Undefined, null);
+                if (match.Success && match.Index != 0)
+                {
+                    _xmlData = _xmlData.Remove(0, match.Length);
+                    NextScannedToken = new ScannedToken(specifiedToken, match.Value);
+                }
+                else
+                    NextScannedToken = new ScannedToken(TokenType.Undefined, null);
+            }
         }
     }
 }

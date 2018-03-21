@@ -15,6 +15,8 @@
             //15 is the default maximum.
             Regex.CacheSize = Math.Max(15, Enum.GetNames(typeof(TokenType)).Length);
 
+            //All regexes should begin at the beginning of the line 
+            //because we clip the line out as we process.
             Map = new Dictionary<TokenType, Regex>
             {
                 {TokenType.LessThanSymbol, new Regex("\\A<") },
@@ -25,8 +27,10 @@
                 {TokenType.DoubleQuoteSymbol, new Regex("\\A\"") },
                 {TokenType.WhitespaceSymbol, new Regex("\\A\\s+") },
                 {TokenType.ColonSymbol, new Regex("\\A:") },
-                {TokenType.Identifier, new Regex("\\A[a-zA-Z0-9]-_\\.") },
-                {TokenType.Data, new Regex("\\A[a-zA-Z0-9]&;-_\\\\/\\.#>'\"") },
+                {TokenType.QuestionMarkSymbol, new Regex("\\A\\?") },
+                {TokenType.Version, new Regex("\\A[0-9](\\.[0-9])*") },
+                {TokenType.Identifier, new Regex("\\A([a-zA-Z0-9-_\\.])+") },
+                {TokenType.Data, new Regex("\\A[a-zA-Z0-9&;-_\\\\/\\.#>'\"\\?]+") },
                 {TokenType.Eof, new  Regex("\\z") }
             };
         }
