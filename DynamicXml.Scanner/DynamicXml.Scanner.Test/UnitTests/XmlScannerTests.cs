@@ -91,5 +91,70 @@ namespace DynamicXml.Scanner.Test.UnitTests
                     Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], scanner.NextScannedToken.Literal);
             }
         }
+
+        [TestMethod]
+        public void TagParsingTest()
+        {
+            const string testString =
+                "<Parent attrib=\"New Attribute\">\n\t<Child/>\n\t<Child>Some info</Child>\n</Parent>";
+
+            var expectedTokens = new[]
+            {
+                TokenType.LessThanSymbol,
+                TokenType.Identifier,
+                TokenType.WhitespaceSymbol,
+                TokenType.Identifier,
+                TokenType.EqualSymbol,
+                TokenType.DoubleQuoteSymbol,
+                TokenType.Data,
+                TokenType.DoubleQuoteSymbol,
+                TokenType.GreaterThanSymbol,
+                TokenType.WhitespaceSymbol,
+                TokenType.LessThanSymbol,
+                TokenType.Identifier,
+                TokenType.SlashSymbol,
+                TokenType.GreaterThanSymbol,
+                TokenType.WhitespaceSymbol,
+                TokenType.LessThanSymbol,
+                TokenType.Identifier,
+                TokenType.GreaterThanSymbol,
+                TokenType.Data,
+                TokenType.LessThanSymbol,
+                TokenType.SlashSymbol,
+                TokenType.Identifier,
+                TokenType.GreaterThanSymbol,
+                TokenType.WhitespaceSymbol,
+                TokenType.LessThanSymbol,
+                TokenType.SlashSymbol,
+                TokenType.Identifier,
+                TokenType.GreaterThanSymbol,
+                TokenType.Eof
+            };
+
+            var expectedLiterals = new[]
+            {
+                "Parent",
+                "attrib",
+                "New Attribute",
+                "Child",
+                "Child",
+                "Some info",
+                "Child",
+                "Parent"
+            };
+
+            var expectedIdentifierIndex = 0;
+
+            var scanner = new XmlScanner(testString);
+
+            foreach (var tokenType in expectedTokens)
+            {
+                scanner.AdvanceTokenBuffer(tokenType);
+                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
+
+                if (scanner.NextScannedToken.Type == TokenType.Identifier || scanner.NextScannedToken.Type == TokenType.Data)
+                    Assert.AreEqual(expectedLiterals[expectedIdentifierIndex++], scanner.NextScannedToken.Literal);
+            }
+        }
     }
 }

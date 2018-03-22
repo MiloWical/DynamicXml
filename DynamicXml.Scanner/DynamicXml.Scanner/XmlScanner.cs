@@ -17,7 +17,6 @@ namespace DynamicXml.Scanner
             if (xmlData != null) _xmlData = xmlData;
         }
 
-        //TODO: This method is too long. Break it up.
         public void AdvanceTokenBuffer(TokenType specifiedToken = TokenType.Unspecified)
         {
             if (_xmlData.Length == 0)
@@ -27,32 +26,43 @@ namespace DynamicXml.Scanner
             }
 
             if (specifiedToken == TokenType.Unspecified)
-            {
-                foreach (var tokenRegex in TokenRegexLookup.Map)
-                {
-                    var match = tokenRegex.Value.Match(_xmlData);
-
-                    if (!match.Success || match.Index != 0) continue;
-
-                    _xmlData = _xmlData.Remove(0, match.Length);
-                    NextScannedToken = new ScannedToken(tokenRegex.Key, match.Value);
-                    return;
-                }
-
-                NextScannedToken = new ScannedToken(TokenType.Undefined, null);
-            }
+                AdvanceBufferForUnspecifiedTokenType();
             else
-            {
-                var match = TokenRegexLookup.Map[specifiedToken].Match(_xmlData);
-
-                if (match.Success && match.Index != 0)
-                {
-                    _xmlData = _xmlData.Remove(0, match.Length);
-                    NextScannedToken = new ScannedToken(specifiedToken, match.Value);
-                }
-                else
-                    NextScannedToken = new ScannedToken(TokenType.Undefined, null);
-            }
+                AdvanceBufferForSpecifiedTokenType(specifiedToken);
         }
+
+        #region Private Helper Methods
+
+        private void AdvanceBufferForUnspecifiedTokenType()
+        {
+            foreach (var tokenRegex in TokenRegexLookup.Map)
+            {
+                var match = tokenRegex.Value.Match(_xmlData);
+
+                if (!match.Success || match.Index != 0) continue;
+
+                _xmlData = _xmlData.Remove(0, match.Length);
+                NextScannedToken = new ScannedToken(tokenRegex.Key, match.Value);
+                return;
+            }
+
+            NextScannedToken = new ScannedToken(TokenType.Undefined, null);
+        }
+
+        private void AdvanceBufferForSpecifiedTokenType(TokenType type)
+        {
+            var match = TokenRegexLookup.Map[type].Match(_xmlData);
+
+            if (match.Success && match.Index == 0)
+            {
+                _xmlData = _xmlData.Remove(0, match.Length);
+                NextScannedToken = new ScannedToken(type, match.Value);
+            }
+
+            else
+                NextScannedToken = new ScannedToken(TokenType.Undefined, null);
+        }
+
+        #endregion
     }
 }
