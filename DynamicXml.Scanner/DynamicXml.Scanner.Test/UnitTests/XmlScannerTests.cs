@@ -87,7 +87,7 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 scanner.AdvanceTokenBuffer();
                 Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
 
-                if(scanner.NextScannedToken.Type == TokenType.Identifier)
+                if (scanner.NextScannedToken.Type == TokenType.Identifier)
                     Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], scanner.NextScannedToken.Literal);
             }
         }
@@ -166,8 +166,66 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 scanner.AdvanceTokenBuffer(tokenType);
                 Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
 
-                if (scanner.NextScannedToken.Type == TokenType.Identifier || scanner.NextScannedToken.Type == TokenType.Data)
+                if (scanner.NextScannedToken.Type == TokenType.Identifier ||
+                    scanner.NextScannedToken.Type == TokenType.Data)
                     Assert.AreEqual(expectedLiterals[expectedIdentifierIndex++], scanner.NextScannedToken.Literal);
+            }
+        }
+
+        [TestMethod]
+        public void CommentParsingTest()
+        {
+            const string testString =
+                "<!--Comment--><tag><!-- New Comment with <tag> --></tag>";
+
+            var expectedTokens = new[]
+            {
+                TokenType.Comment,
+                TokenType.LessThanSymbol,
+                TokenType.Identifier,
+                TokenType.GreaterThanSymbol,
+                TokenType.Comment,
+                TokenType.LessThanSymbol,
+                TokenType.SlashSymbol,
+                TokenType.Identifier,
+                TokenType.GreaterThanSymbol
+            };
+
+            var scanner = new XmlScanner(testString);
+
+            foreach (var tokenType in expectedTokens)
+            {
+                scanner.AdvanceTokenBuffer(tokenType);
+                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
+            }
+        }
+
+        [TestMethod]
+        public void CDataParsingTest()
+        {
+            const string testString =
+                "<!--Comment with <![CDATA ]]> --><tag><![CDATA[New character\ndata with a <tag>]]></tag>";
+                //"<!--Comment with <![CDATA ]]> -->";
+
+            var expectedTokens = new[]
+            {
+                TokenType.Comment,
+                TokenType.LessThanSymbol,
+                TokenType.Identifier,
+                TokenType.GreaterThanSymbol,
+                TokenType.CData,
+                TokenType.LessThanSymbol,
+                TokenType.SlashSymbol,
+                TokenType.Identifier,
+                TokenType.GreaterThanSymbol
+            };
+
+            var scanner = new XmlScanner(testString);
+
+            foreach (var tokenType in expectedTokens)
+            {
+                scanner.AdvanceTokenBuffer(tokenType);
+                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
             }
         }
     }

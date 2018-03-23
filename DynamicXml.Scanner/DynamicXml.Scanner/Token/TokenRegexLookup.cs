@@ -15,10 +15,12 @@
             //15 is the default maximum.
             Regex.CacheSize = Math.Max(15, Enum.GetNames(typeof(TokenType)).Length);
 
-            //All regexes should begin at the beginning of the line 
+            //All regexes should begin at the beginning of the line s
             //because we clip the line out as we process.
             Map = new Dictionary<TokenType, Regex>
             {
+                {TokenType.Comment, new Regex("\\A<!\\-\\-[a-zA-Z0-9&;!\\[\\]\\-_\\\\/\\.#<>\\?\\s]+\\-\\->")},
+                {TokenType.CData, new Regex("\\A<!\\[CDATA\\[[a-zA-Z0-9&;\\-_\\\\/\\.#<>\\?\\s]+\\]\\]>")},
                 {TokenType.LessThanSymbol, new Regex("\\A<") },
                 {TokenType.GreaterThanSymbol, new Regex("\\A>") },
                 {TokenType.SlashSymbol, new Regex("\\A/") },

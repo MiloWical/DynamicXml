@@ -4,6 +4,8 @@ namespace DynamicXml.Scanner.Token
     {
         Unspecified,
         Undefined,
+        Comment,
+        CData,
         LessThanSymbol,
         GreaterThanSymbol,
         SlashSymbol,
