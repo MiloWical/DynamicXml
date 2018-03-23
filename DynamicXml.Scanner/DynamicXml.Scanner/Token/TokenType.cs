@@ -11,6 +11,7 @@ namespace DynamicXml.Scanner.Token
         SingleQuoteSymbol,
         DoubleQuoteSymbol,
         WhitespaceSymbol,
+        OptionalWhitespaceSymbol,
         ColonSymbol,
         QuestionMarkSymbol,
         Version,

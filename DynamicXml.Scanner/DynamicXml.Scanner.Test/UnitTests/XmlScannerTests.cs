@@ -96,7 +96,7 @@ namespace DynamicXml.Scanner.Test.UnitTests
         public void TagParsingTest()
         {
             const string testString =
-                "<Parent attrib=\"New Attribute\">\n\t<Child/>\n\t<Child>Some info</Child>\n</Parent>";
+                "<Parent attrib=\"New Attribute\">\n\t<Child/>\n\t<Child>Some info</Child><Child id='2'/>\n</Parent>";
 
             var expectedTokens = new[]
             {
@@ -123,6 +123,17 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 TokenType.SlashSymbol,
                 TokenType.Identifier,
                 TokenType.GreaterThanSymbol,
+                TokenType.WhitespaceSymbol, //This is optional whitespace
+                TokenType.LessThanSymbol,
+                TokenType.Identifier,
+                TokenType.WhitespaceSymbol,
+                TokenType.Identifier,
+                TokenType.EqualSymbol,
+                TokenType.SingleQuoteSymbol,
+                TokenType.Data,
+                TokenType.SingleQuoteSymbol,
+                TokenType.SlashSymbol,
+                TokenType.GreaterThanSymbol,
                 TokenType.WhitespaceSymbol,
                 TokenType.LessThanSymbol,
                 TokenType.SlashSymbol,
@@ -140,6 +151,9 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 "Child",
                 "Some info",
                 "Child",
+                "Child",
+                "id",
+                "2",
                 "Parent"
             };
 

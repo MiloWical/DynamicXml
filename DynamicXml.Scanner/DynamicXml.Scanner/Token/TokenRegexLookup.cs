@@ -25,7 +25,7 @@
                 {TokenType.EqualSymbol, new Regex("\\A=") },
                 {TokenType.SingleQuoteSymbol, new Regex("\\A'") },
                 {TokenType.DoubleQuoteSymbol, new Regex("\\A\"") },
-                {TokenType.WhitespaceSymbol, new Regex("\\A\\s+") },
+                {TokenType.WhitespaceSymbol, new Regex("\\A\\s*") },
                 {TokenType.ColonSymbol, new Regex("\\A:") },
                 {TokenType.QuestionMarkSymbol, new Regex("\\A\\?") },
                 {TokenType.Version, new Regex("\\A[0-9](\\.[0-9])*") },
