@@ -41,10 +41,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TokenProvider\ITokenReader.cs" />
+    <Compile Include="TokenProvider\RegexTokenReader.cs" />
     <Compile Include="Token\ScannedToken.cs" />
-    <Compile Include="Token\TokenRegexLookup.cs" />
+    <Compile Include="Regex\TokenRegexLookup.cs" />
     <Compile Include="Token\TokenType.cs" />
     <Compile Include="XmlScanner.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DFA\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,22 +1,23 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace DynamicXml.Scanner.Test.UnitTests
+﻿namespace DynamicXml.Scanner.Test.UnitTests.TokenProvider
 {
-    using DynamicXml.Scanner.Token;
+    #region Imports
+
     using System.Diagnostics.CodeAnalysis;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Scanner.TokenProvider;
+    using Token;
+
+    #endregion
 
     /// <summary>
-    /// Summary description for XmlScannerTests
+    ///     Summary description for RegexTokenReaderTests
     /// </summary>
     [TestClass]
     [ExcludeFromCodeCoverage]
-    public class XmlScannerTests
+    public class RegexTokenReaderTests
     {
         [TestMethod]
-        public void XmlScannerSymbolTokenReadingTest()
+        public void RegexTokenReaderSymbolTokenReadingTest()
         {
             const string testString = ":  \"'=/><?";
 
@@ -34,12 +35,12 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 TokenType.Eof
             };
 
-            var scanner = new XmlScanner(testString);
+            var reader = new RegexTokenReader(testString);
 
             foreach (var tokenType in expectedTokens)
             {
-                scanner.AdvanceTokenBuffer();
-                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
+                var token = reader.GetNextTokenFromBuffer();
+                Assert.AreEqual(tokenType, token.Type);
             }
         }
 
@@ -80,15 +81,15 @@ namespace DynamicXml.Scanner.Test.UnitTests
 
             var expectedIdentifierIndex = 0;
 
-            var scanner = new XmlScanner(testString);
+            var reader = new RegexTokenReader(testString);
 
             foreach (var tokenType in expectedTokens)
             {
-                scanner.AdvanceTokenBuffer();
-                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
+                var token = reader.GetNextTokenFromBuffer();
+                Assert.AreEqual(tokenType, token.Type);
 
-                if (scanner.NextScannedToken.Type == TokenType.Identifier)
-                    Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], scanner.NextScannedToken.Literal);
+                if (token.Type == TokenType.Identifier)
+                    Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], token.Literal);
             }
         }
 
@@ -123,7 +124,6 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 TokenType.SlashSymbol,
                 TokenType.Identifier,
                 TokenType.GreaterThanSymbol,
-                TokenType.WhitespaceSymbol, //This is optional whitespace
                 TokenType.LessThanSymbol,
                 TokenType.Identifier,
                 TokenType.WhitespaceSymbol,
@@ -159,16 +159,16 @@ namespace DynamicXml.Scanner.Test.UnitTests
 
             var expectedIdentifierIndex = 0;
 
-            var scanner = new XmlScanner(testString);
+            var reader = new RegexTokenReader(testString);
 
             foreach (var tokenType in expectedTokens)
             {
-                scanner.AdvanceTokenBuffer(tokenType);
-                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
+                var token = reader.GetNextTokenFromBuffer(tokenType);
+                Assert.AreEqual(tokenType, token.Type);
 
-                if (scanner.NextScannedToken.Type == TokenType.Identifier ||
-                    scanner.NextScannedToken.Type == TokenType.Data)
-                    Assert.AreEqual(expectedLiterals[expectedIdentifierIndex++], scanner.NextScannedToken.Literal);
+                if (token.Type == TokenType.Identifier ||
+                    token.Type == TokenType.Data)
+                    Assert.AreEqual(expectedLiterals[expectedIdentifierIndex++], token.Literal);
             }
         }
 
@@ -176,7 +176,7 @@ namespace DynamicXml.Scanner.Test.UnitTests
         public void CommentParsingTest()
         {
             const string testString =
-                "<!--Comment--><tag><!-- New Comment with <tag> --></tag>";
+                "<!--Comment--><tag><!-- New Comment with <tag> and \t\n\t some whitespace --></tag>";
 
             var expectedTokens = new[]
             {
@@ -191,12 +191,12 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 TokenType.GreaterThanSymbol
             };
 
-            var scanner = new XmlScanner(testString);
+            var reader = new RegexTokenReader(testString);
 
             foreach (var tokenType in expectedTokens)
             {
-                scanner.AdvanceTokenBuffer(tokenType);
-                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
+                var token = reader.GetNextTokenFromBuffer(tokenType);
+                Assert.AreEqual(tokenType, token.Type);
             }
         }
 
@@ -205,7 +205,6 @@ namespace DynamicXml.Scanner.Test.UnitTests
         {
             const string testString =
                 "<!--Comment with <![CDATA ]]> --><tag><![CDATA[New character\ndata with a <tag>]]></tag>";
-                //"<!--Comment with <![CDATA ]]> -->";
 
             var expectedTokens = new[]
             {
@@ -220,12 +219,12 @@ namespace DynamicXml.Scanner.Test.UnitTests
                 TokenType.GreaterThanSymbol
             };
 
-            var scanner = new XmlScanner(testString);
+            var reader = new RegexTokenReader(testString);
 
             foreach (var tokenType in expectedTokens)
             {
-                scanner.AdvanceTokenBuffer(tokenType);
-                Assert.AreEqual(tokenType, scanner.NextScannedToken.Type);
+                var token = reader.GetNextTokenFromBuffer(tokenType);
+                Assert.AreEqual(tokenType, token.Type);
             }
         }
     }
