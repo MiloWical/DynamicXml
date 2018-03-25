@@ -40,8 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DFA\Edge.cs" />
-    <Compile Include="DFA\State.cs" />
+    <Compile Include="DFA\Edge\TransitionEdge.cs" />
+    <Compile Include="DFA\Edge\IEdge.cs" />
+    <Compile Include="DFA\State\StateBase.cs" />
+    <Compile Include="DFA\State\IState.cs" />
+    <Compile Include="DFA\State\StateExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TokenProvider\ITokenReader.cs" />
     <Compile Include="TokenProvider\RegexTokenReader.cs" />

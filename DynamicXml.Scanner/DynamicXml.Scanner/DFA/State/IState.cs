@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DynamicXml.Scanner.DFA
+namespace DynamicXml.Scanner.DFA.State
 {
-    public class Edge
+    public interface IState
     {
+        IState TransitionToNextState(char[] buffer);
     }
 }
