@@ -7,11 +7,11 @@
     {
         public string Name { get; }
 
-        private IEdge[] _transitions;
+        protected IEdge[] Transitions;
 
         protected StateBase(IEdge[] transitions, string name = "")
         {
-            _transitions = transitions ?? throw new ArgumentNullException(nameof(transitions));
+            Transitions = transitions ?? throw new ArgumentNullException(nameof(transitions));
             Name = name;
         }
 
