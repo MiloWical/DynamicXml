@@ -1,6 +1,6 @@
-namespace DynamicXml.Scanner.Token
+namespace DynamicXml.Scanner.Lexeme
 {
-    public enum TokenType
+    public enum LexemeType
     {
         Unspecified,
         Undefined,
