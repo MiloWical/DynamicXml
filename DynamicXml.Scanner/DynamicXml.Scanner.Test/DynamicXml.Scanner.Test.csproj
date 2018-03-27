@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitTests\LexemeReader\DfaLexemeReaderTests.cs" />
     <Compile Include="UnitTests\LexemeReader\RegexLexemeReaderTests.cs" />
   </ItemGroup>
   <ItemGroup />
