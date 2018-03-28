@@ -20,14 +20,21 @@
     [ExcludeFromCodeCoverage]
     public class DfaLexemeReaderTests
     {
-        private static readonly IState ColonSymbolTerminalState = new TerminalState(LexemeType.ColonSymbol);
-        private static readonly IState DoubleQuoteSymbolTerminalState = new TerminalState(LexemeType.DoubleQuoteSymbol);
-        private static readonly IState SingleQuoteSymbolTerminalState = new TerminalState(LexemeType.SingleQuoteSymbol);
-        private static readonly IState EqualSymbolTerminalState = new TerminalState(LexemeType.EqualSymbol);
-        private static readonly IState SlashSymbolTerminalState = new TerminalState(LexemeType.SlashSymbol);
-        private static readonly IState GreaterThanSymbolTerminalState = new TerminalState(LexemeType.GreaterThanSymbol);
-        private static readonly IState LessThanSymbolTerminalState = new TerminalState(LexemeType.LessThanSymbol);
-        private static readonly IState QuestionMarkSymbolTerminalState = new TerminalState(LexemeType.QuestionMarkSymbol);
+        private static readonly IState ColonSymbolTerminalState = new TerminalState(LexemeType.ColonSymbol, nameof(ColonSymbolTerminalState));
+        private static readonly IState DoubleQuoteSymbolTerminalState = new TerminalState(LexemeType.DoubleQuoteSymbol, nameof(DoubleQuoteSymbolTerminalState));
+        private static readonly IState SingleQuoteSymbolTerminalState = new TerminalState(LexemeType.SingleQuoteSymbol, nameof(SingleQuoteSymbolTerminalState));
+        private static readonly IState EqualSymbolTerminalState = new TerminalState(LexemeType.EqualSymbol, nameof(EqualSymbolTerminalState));
+        private static readonly IState SlashSymbolTerminalState = new TerminalState(LexemeType.SlashSymbol, nameof(SlashSymbolTerminalState));
+        private static readonly IState GreaterThanSymbolTerminalState = new TerminalState(LexemeType.GreaterThanSymbol, nameof(GreaterThanSymbolTerminalState));
+        private static readonly IState LessThanSymbolTerminalState = new TerminalState(LexemeType.LessThanSymbol, nameof(LessThanSymbolTerminalState));
+        private static readonly IState QuestionMarkSymbolTerminalState = new TerminalState(LexemeType.QuestionMarkSymbol, nameof(QuestionMarkSymbolTerminalState));
+        private static readonly IState WhitespaceSymbolTerminalState = new TerminalState(LexemeType.WhitespaceSymbol, nameof(WhitespaceSymbolTerminalState));
+
+        private static readonly IState WhitespaceSymbolNonterminalState = new NonterminalState(new IEdge[]
+        {
+            new LocalEdge(buffer => buffer != null && char.IsWhiteSpace(buffer[0])),
+            new TransitionEdge(buffer => buffer == null || !char.IsWhiteSpace(buffer[0]), WhitespaceSymbolTerminalState)
+        }, nameof(WhitespaceSymbolNonterminalState));
 
         private readonly IState _initialXmlState = new NonterminalState(new IEdge[]
         {
@@ -38,7 +45,8 @@
             new TransitionEdge(buffer => buffer[0] == '/', SlashSymbolTerminalState),
             new TransitionEdge(buffer => buffer[0] == '>', GreaterThanSymbolTerminalState),
             new TransitionEdge(buffer => buffer[0] == '<', LessThanSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '?', QuestionMarkSymbolTerminalState)
+            new TransitionEdge(buffer => buffer[0] == '?', QuestionMarkSymbolTerminalState),
+            new TransitionEdge(buffer => char.IsWhiteSpace(buffer[0]), WhitespaceSymbolNonterminalState)
         });
         
 
@@ -57,6 +65,26 @@
                 LexemeType.GreaterThanSymbol,
                 LexemeType.LessThanSymbol,
                 LexemeType.QuestionMarkSymbol,
+                LexemeType.Eof
+            };
+
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, _initialXmlState);
+
+            foreach (var lexemeType in expectedLexemes)
+            {
+                var lexeme = reader.GetNextLexemeFromBuffer();
+                Assert.AreEqual(lexemeType, lexeme.Type);
+            }
+        }
+
+        [TestMethod]
+        public void DfaWhitespaceOnlyLexemeReadingTest()
+        {
+            const string testString = " \t\n  ";
+
+            var expectedLexemes = new[]
+            {
+                LexemeType.WhitespaceSymbol,
                 LexemeType.Eof
             };
 

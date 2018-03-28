@@ -10,7 +10,7 @@
 
         protected IEdge[] Transitions;
 
-        protected StateBase(IEdge[] transitions, string name = "")
+        protected StateBase(IEdge[] transitions, string name = null)
         {
             Transitions = transitions ?? throw new ArgumentNullException(nameof(transitions));
             Name = name;

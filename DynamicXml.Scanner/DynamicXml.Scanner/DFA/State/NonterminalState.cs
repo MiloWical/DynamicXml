@@ -11,7 +11,7 @@
 
     public class NonterminalState : StateBase
     {
-        public NonterminalState(IEdge[] transitions, string name = "") : base(transitions, name)
+        public NonterminalState(IEdge[] transitions, string name = null) : base(transitions, name)
         {
         }
 
@@ -19,18 +19,33 @@
         {
             foreach (var edge in Transitions)
             {
-                var nextState = edge.Transition(buffer);
+                if (!edge.Transition(buffer)) continue;
 
-                if (nextState != null)
+                var nextState = GetNextStateFromEdge(edge);
+
+                switch (nextState)
                 {
-                    foreach (var c in buffer)
-                        currentLexeme.Add(c);
-
-                    return nextState;
+                    case null:
+                        continue;
+                    case TerminalState _:
+                        return nextState;
                 }
+
+                foreach (var c in buffer)
+                    currentLexeme.Add(c);
+                    
+                return nextState;
             }
 
             throw new IllegalBufferStateException(this, buffer);
+        }
+
+        private IState GetNextStateFromEdge(IEdge edge)
+        {
+            if (edge is TransitionEdge transitionEdge)
+                return transitionEdge.NextState;
+
+            return this;
         }
     }
 }

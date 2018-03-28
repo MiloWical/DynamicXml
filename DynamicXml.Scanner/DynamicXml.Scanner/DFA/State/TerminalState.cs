@@ -9,12 +9,15 @@
 
     public class TerminalState : IState
     {
-        public TerminalState(LexemeType lexemeType)
+        public LexemeType Type { get; }
+
+        public string Name { get; }
+
+        public TerminalState(LexemeType lexemeType, string name = null)
         {
             Type = lexemeType;
+            Name = name;
         }
-
-        public LexemeType Type { get; }
 
         public IState TransitionToNextState(char[] buffer, ICollection<char> currentLexeme)
         {

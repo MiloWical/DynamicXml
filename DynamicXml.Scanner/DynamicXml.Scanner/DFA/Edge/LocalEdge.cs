@@ -1,23 +1,25 @@
-﻿namespace DynamicXml.Scanner.DFA.Edge
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DynamicXml.Scanner.DFA.Edge
 {
-    using System;
     using State;
 
-    public class TransitionEdge : IEdge
+    public class LocalEdge : IEdge
     {
         private readonly Func<char[], bool> _transitionFunction;
 
-        public TransitionEdge(Func<char[], bool> transitionFunction, IState nextState)
+        public LocalEdge(Func<char[], bool> transitionFunction)
         {
             _transitionFunction = transitionFunction ?? throw new ArgumentNullException(nameof(transitionFunction));
-            NextState = nextState ?? throw new ArgumentNullException(nameof(nextState));
         }
 
         public bool Transition(char[] buffer)
         {
             return _transitionFunction(buffer);
         }
-
-        public IState NextState { get; }
     }
 }

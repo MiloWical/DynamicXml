@@ -40,12 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DFA\Edge\LocalEdge.cs" />
     <Compile Include="DFA\Edge\TransitionEdge.cs" />
     <Compile Include="DFA\Edge\IEdge.cs" />
     <Compile Include="DFA\State\NonterminalState.cs" />
     <Compile Include="DFA\State\StateBase.cs" />
     <Compile Include="DFA\State\IState.cs" />
     <Compile Include="DFA\State\TerminalState.cs" />
+    <Compile Include="DFA\State\XmlStates.cs" />
     <Compile Include="Exception\IllegalBufferStateException.cs" />
     <Compile Include="LexemeReader\DfaLexemeReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

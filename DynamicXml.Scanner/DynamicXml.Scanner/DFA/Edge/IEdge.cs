@@ -10,6 +10,6 @@ namespace DynamicXml.Scanner.DFA.Edge
 
     public interface IEdge
     {
-        IState Transition(char[] buffer);
+        bool Transition(char[] buffer);
     }
 }

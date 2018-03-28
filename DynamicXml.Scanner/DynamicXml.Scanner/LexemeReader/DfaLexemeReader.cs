@@ -26,6 +26,8 @@
             _reader = new StreamReader(inputStream);
             _buffer = new char[lookaheadBufferSize];
             _endOfStream = false;
+
+            AdvanceBuffer(); //Preload the buffer
         }
 
         public Lexeme GetNextLexemeFromBuffer(LexemeType specifiedLexeme = LexemeType.Unspecified)
@@ -38,12 +40,9 @@
 
             while (!(currentState is TerminalState))
             {
-                AdvanceBuffer();
-
-                if (_endOfStream)
-                    return EofLexeme;
-
                 currentState = currentState.TransitionToNextState(_buffer, lexeme);
+
+                AdvanceBuffer(); //Always leave the buffer one read ahead
             }
 
             var terminalStateLexeme = new Lexeme(((TerminalState)currentState).Type, new string(lexeme.ToArray()));
@@ -53,6 +52,8 @@
 
         private void AdvanceBuffer()
         {
+            if (_endOfStream) return;
+
             var charactersRead = _reader.Read(_buffer, 0, _buffer.Length);
 
             if (charactersRead > 0) return;
