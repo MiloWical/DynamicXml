@@ -20,33 +20,43 @@
     [ExcludeFromCodeCoverage]
     public class DfaLexemeReaderTests
     {
-        private static readonly IState ColonTerminalState = new TerminalState(LexemeType.ColonSymbol);
-        private static readonly IState DoubleQuoteTerminalState = new TerminalState(LexemeType.DoubleQuoteSymbol);
+        private static readonly IState ColonSymbolTerminalState = new TerminalState(LexemeType.ColonSymbol);
+        private static readonly IState DoubleQuoteSymbolTerminalState = new TerminalState(LexemeType.DoubleQuoteSymbol);
+        private static readonly IState SingleQuoteSymbolTerminalState = new TerminalState(LexemeType.SingleQuoteSymbol);
+        private static readonly IState EqualSymbolTerminalState = new TerminalState(LexemeType.EqualSymbol);
+        private static readonly IState SlashSymbolTerminalState = new TerminalState(LexemeType.SlashSymbol);
+        private static readonly IState GreaterThanSymbolTerminalState = new TerminalState(LexemeType.GreaterThanSymbol);
+        private static readonly IState LessThanSymbolTerminalState = new TerminalState(LexemeType.LessThanSymbol);
+        private static readonly IState QuestionMarkSymbolTerminalState = new TerminalState(LexemeType.QuestionMarkSymbol);
 
         private readonly IState _initialXmlState = new NonterminalState(new IEdge[]
         {
-            new TransitionEdge(buffer => buffer[0] == ':', ColonTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '\"', DoubleQuoteTerminalState)
+            new TransitionEdge(buffer => buffer[0] == ':', ColonSymbolTerminalState),
+            new TransitionEdge(buffer => buffer[0] == '"', DoubleQuoteSymbolTerminalState),
+            new TransitionEdge(buffer => buffer[0] == '\'', SingleQuoteSymbolTerminalState),
+            new TransitionEdge(buffer => buffer[0] == '=', EqualSymbolTerminalState),
+            new TransitionEdge(buffer => buffer[0] == '/', SlashSymbolTerminalState),
+            new TransitionEdge(buffer => buffer[0] == '>', GreaterThanSymbolTerminalState),
+            new TransitionEdge(buffer => buffer[0] == '<', LessThanSymbolTerminalState),
+            new TransitionEdge(buffer => buffer[0] == '?', QuestionMarkSymbolTerminalState)
         });
         
 
         [TestMethod]
         public void DfaTerminalLexemeReadingTest()
         {
-            //const string testString = ":  \"'=/><?";
-            const string testString = ":\"";
+            const string testString = ":\"'=/><?";
 
             var expectedLexemes = new[]
             {
                 LexemeType.ColonSymbol,
-                //LexemeType.WhitespaceSymbol,
                 LexemeType.DoubleQuoteSymbol,
-                //LexemeType.SingleQuoteSymbol,
-                //LexemeType.EqualSymbol,
-                //LexemeType.SlashSymbol,
-                //LexemeType.GreaterThanSymbol,
-                //LexemeType.LessThanSymbol,
-                //LexemeType.QuestionMarkSymbol,
+                LexemeType.SingleQuoteSymbol,
+                LexemeType.EqualSymbol,
+                LexemeType.SlashSymbol,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.LessThanSymbol,
+                LexemeType.QuestionMarkSymbol,
                 LexemeType.Eof
             };
 
