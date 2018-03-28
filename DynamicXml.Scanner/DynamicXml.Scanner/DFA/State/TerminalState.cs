@@ -2,20 +2,21 @@
 {
     #region Imports
 
+    using System.Collections.Generic;
     using Lexeme;
 
     #endregion
 
     public class TerminalState : IState
     {
-        public TerminalState(Lexeme lexeme)
+        public TerminalState(LexemeType lexemeType)
         {
-            Lexeme = lexeme;
+            Type = lexemeType;
         }
 
-        public Lexeme Lexeme { get; }
+        public LexemeType Type { get; }
 
-        public IState TransitionToNextState(char[] buffer)
+        public IState TransitionToNextState(char[] buffer, ICollection<char> currentLexeme)
         {
             return null;
         }

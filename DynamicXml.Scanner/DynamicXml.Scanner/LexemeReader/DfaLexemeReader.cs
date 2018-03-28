@@ -1,6 +1,7 @@
 ﻿namespace DynamicXml.Scanner.LexemeReader
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using DFA.State;
     using Lexeme;
@@ -9,11 +10,10 @@
     {
         private readonly StreamReader _reader;
         private char[] _buffer;
-        private int _bufferIndex;
         private bool _endOfStream;
         private readonly IState _initialState;
 
-        private static readonly Lexeme UndefinedLexeme = new Lexeme(LexemeType.Undefined, string.Empty);
+        private static readonly Lexeme EofLexeme = new Lexeme(LexemeType.Eof, string.Empty);
 
         public DfaLexemeReader(Stream inputStream, int lookaheadBufferSize, IState initialState)
         {
@@ -25,39 +25,42 @@
 
             _reader = new StreamReader(inputStream);
             _buffer = new char[lookaheadBufferSize];
-            _bufferIndex = 0;
             _endOfStream = false;
         }
 
         public Lexeme GetNextLexemeFromBuffer(LexemeType specifiedLexeme = LexemeType.Unspecified)
         {
             if (_endOfStream)
-                return UndefinedLexeme;
+                return EofLexeme;
 
             var currentState = _initialState;
+            var lexeme = new List<char>();
 
             while (!(currentState is TerminalState))
             {
                 AdvanceBuffer();
-                currentState = currentState.TransitionToNextState(_buffer);
+
+                if (_endOfStream)
+                    return EofLexeme;
+
+                currentState = currentState.TransitionToNextState(_buffer, lexeme);
             }
 
-            return ((TerminalState) currentState).Lexeme;
+            var terminalStateLexeme = new Lexeme(((TerminalState)currentState).Type, new string(lexeme.ToArray()));
+
+            return terminalStateLexeme;
         }
 
         private void AdvanceBuffer()
         {
-            var charactersRead = _reader.Read(_buffer, _bufferIndex, _buffer.Length);
+            var charactersRead = _reader.Read(_buffer, 0, _buffer.Length);
 
-            if (charactersRead == 0)
-            {
-                _endOfStream = true;
-                _reader.Close();
-                _reader.Dispose();
-                _buffer = null;
-            }
+            if (charactersRead > 0) return;
 
-            _bufferIndex += charactersRead;
+            _endOfStream = true;
+            _reader.Close();
+            _reader.Dispose();
+            _buffer = null;
         }
     }
 }

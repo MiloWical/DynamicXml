@@ -44,13 +44,10 @@
         {
             var match = LexemeRegexLookup.Map[type].Match(_buffer);
 
-            if (match.Success && match.Index == 0)
-            {
-                _buffer = _buffer.Remove(0, match.Length);
-                return new Lexeme(type, match.Value);
-            }
+            if (!match.Success || match.Index != 0) return new Lexeme(LexemeType.Undefined, null);
 
-            return new Lexeme(LexemeType.Undefined, null);
+            _buffer = _buffer.Remove(0, match.Length);
+            return new Lexeme(type, match.Value);
         }
 
         #endregion

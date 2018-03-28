@@ -8,6 +8,6 @@ namespace DynamicXml.Scanner.DFA.State
 {
     public interface IState
     {
-        IState TransitionToNextState(char[] buffer);
+        IState TransitionToNextState(char[] buffer, ICollection<char> currentLexeme);
     }
 }

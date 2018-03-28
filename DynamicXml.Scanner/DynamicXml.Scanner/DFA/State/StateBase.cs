@@ -1,6 +1,7 @@
 ﻿namespace DynamicXml.Scanner.DFA.State
 {
     using System;
+    using System.Collections.Generic;
     using Edge;
 
     public abstract class StateBase : IState
@@ -15,6 +16,6 @@
             Name = name;
         }
 
-        public abstract IState TransitionToNextState(char[] buffer);
+        public abstract IState TransitionToNextState(char[] buffer, ICollection<char> currentLexeme);
     }
 }

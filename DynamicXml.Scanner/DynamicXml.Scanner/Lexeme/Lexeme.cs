@@ -3,7 +3,7 @@
     public class Lexeme
     {
         public LexemeType Type { get; }
-        public string Literal { get; }
+        public string Literal { get; set; }
 
         public Lexeme(LexemeType lexemeType, string lexemeLiteral)
         {
