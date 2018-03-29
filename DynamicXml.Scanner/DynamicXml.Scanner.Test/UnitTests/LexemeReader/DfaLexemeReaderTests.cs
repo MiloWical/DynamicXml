@@ -97,54 +97,54 @@
             }
         }
 
-        //[TestMethod]
-        //public void XmlPrologLexemeizingTest()
-        //{
-        //    const string testString = "<?xml version=\"1.0\" encoding='UTF-8'?>";
+        [TestMethod]
+        public void XmlPrologLexemeizingTest()
+        {
+            const string testString = "<?xml version=\"1.0\" encoding='UTF-8'?>";
 
-        //    var expectedLexemes = new[]
-        //    {
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.QuestionMarkSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.EqualSymbol,
-        //        LexemeType.DoubleQuoteSymbol,
-        //        LexemeType.Version,
-        //        LexemeType.DoubleQuoteSymbol,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.EqualSymbol,
-        //        LexemeType.SingleQuoteSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.SingleQuoteSymbol,
-        //        LexemeType.QuestionMarkSymbol,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.Eof
-        //    };
+            var expectedLexemes = new[]
+            {
+                LexemeType.LessThanSymbol,
+                LexemeType.QuestionMarkSymbol,
+                LexemeType.Identifier,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.Identifier,
+                LexemeType.EqualSymbol,
+                LexemeType.DoubleQuoteSymbol,
+                LexemeType.Version,
+                LexemeType.DoubleQuoteSymbol,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.Identifier,
+                LexemeType.EqualSymbol,
+                LexemeType.SingleQuoteSymbol,
+                LexemeType.Identifier,
+                LexemeType.SingleQuoteSymbol,
+                LexemeType.QuestionMarkSymbol,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.Eof
+            };
 
-        //    var expectedIdentifiers = new[]
-        //    {
-        //        "xml",
-        //        "version",
-        //        "encoding",
-        //        "UTF-8"
-        //    };
+            var expectedIdentifiers = new[]
+            {
+                "xml",
+                "version",
+                "encoding",
+                "UTF-8"
+            };
 
-        //    var expectedIdentifierIndex = 0;
+            var expectedIdentifierIndex = 0;
 
-        //    var reader = new RegexLexemeReader(testString);
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, _initialXmlState);
 
-        //    foreach (var lexemeType in expectedLexemes)
-        //    {
-        //        var lexeme = reader.GetNextLexemeFromBuffer();
-        //        Assert.AreEqual(lexemeType, lexeme.Type);
+            foreach (var lexemeType in expectedLexemes)
+            {
+                var lexeme = reader.GetNextLexemeFromBuffer();
+                Assert.AreEqual(lexemeType, lexeme.Type);
 
-        //        if (lexeme.Type == LexemeType.Identifier)
-        //            Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], lexeme.Literal);
-        //    }
-        //}
+                if (lexeme.Type == LexemeType.Identifier)
+                    Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], lexeme.Literal);
+            }
+        }
 
         //[TestMethod]
         //public void TagParsingTest()
