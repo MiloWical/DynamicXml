@@ -1,4 +1,7 @@
-﻿namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
+﻿using System.Linq;
+using DynamicXml.Scanner.DFA;
+
+namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
 {
     #region Imports
 
@@ -20,36 +23,8 @@
     [ExcludeFromCodeCoverage]
     public class DfaLexemeReaderTests
     {
-        private static readonly IState ColonSymbolTerminalState = new TerminalState(LexemeType.ColonSymbol, nameof(ColonSymbolTerminalState));
-        private static readonly IState DoubleQuoteSymbolTerminalState = new TerminalState(LexemeType.DoubleQuoteSymbol, nameof(DoubleQuoteSymbolTerminalState));
-        private static readonly IState SingleQuoteSymbolTerminalState = new TerminalState(LexemeType.SingleQuoteSymbol, nameof(SingleQuoteSymbolTerminalState));
-        private static readonly IState EqualSymbolTerminalState = new TerminalState(LexemeType.EqualSymbol, nameof(EqualSymbolTerminalState));
-        private static readonly IState SlashSymbolTerminalState = new TerminalState(LexemeType.SlashSymbol, nameof(SlashSymbolTerminalState));
-        private static readonly IState GreaterThanSymbolTerminalState = new TerminalState(LexemeType.GreaterThanSymbol, nameof(GreaterThanSymbolTerminalState));
-        private static readonly IState LessThanSymbolTerminalState = new TerminalState(LexemeType.LessThanSymbol, nameof(LessThanSymbolTerminalState));
-        private static readonly IState QuestionMarkSymbolTerminalState = new TerminalState(LexemeType.QuestionMarkSymbol, nameof(QuestionMarkSymbolTerminalState));
-        private static readonly IState WhitespaceSymbolTerminalState = new TerminalState(LexemeType.WhitespaceSymbol, nameof(WhitespaceSymbolTerminalState));
-
-        private static readonly IState WhitespaceSymbolNonterminalState = new NonterminalState(new IEdge[]
-        {
-            new LocalEdge(buffer => buffer != null && char.IsWhiteSpace(buffer[0])),
-            new TransitionEdge(buffer => buffer == null || !char.IsWhiteSpace(buffer[0]), WhitespaceSymbolTerminalState)
-        }, nameof(WhitespaceSymbolNonterminalState));
-
-        private readonly IState _initialXmlState = new NonterminalState(new IEdge[]
-        {
-            new TransitionEdge(buffer => buffer[0] == ':', ColonSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '"', DoubleQuoteSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '\'', SingleQuoteSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '=', EqualSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '/', SlashSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '>', GreaterThanSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '<', LessThanSymbolTerminalState),
-            new TransitionEdge(buffer => buffer[0] == '?', QuestionMarkSymbolTerminalState),
-            new TransitionEdge(buffer => char.IsWhiteSpace(buffer[0]), WhitespaceSymbolNonterminalState)
-        });
         
-
+        
         [TestMethod]
         public void DfaTerminalLexemeReadingTest()
         {
@@ -68,7 +43,7 @@
                 LexemeType.Eof
             };
 
-            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, _initialXmlState);
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaStateLexemeLookup());
 
             foreach (var lexemeType in expectedLexemes)
             {
@@ -88,7 +63,7 @@
                 LexemeType.Eof
             };
 
-            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, _initialXmlState);
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaStateLexemeLookup());
 
             foreach (var lexemeType in expectedLexemes)
             {
@@ -134,7 +109,7 @@
 
             var expectedIdentifierIndex = 0;
 
-            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, _initialXmlState);
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaStateLexemeLookup());
 
             foreach (var lexemeType in expectedLexemes)
             {

@@ -1,4 +1,6 @@
-﻿namespace DynamicXml.Scanner.LexemeReader
+﻿using DynamicXml.Scanner.Lookup;
+
+namespace DynamicXml.Scanner.LexemeReader
 {
     using System;
     using System.Collections.Generic;
@@ -11,21 +13,20 @@
         private readonly StreamReader _reader;
         private char[] _buffer;
         private bool _endOfStream;
-        private readonly IState _initialState;
+        private readonly ILexemeLookup _lexemeLookup;
 
         private static readonly Lexeme EofLexeme = new Lexeme(LexemeType.Eof, string.Empty);
 
-        public DfaLexemeReader(Stream inputStream, int lookaheadBufferSize, IState initialState)
+        public DfaLexemeReader(Stream inputStream, int lookaheadBufferSize, ILexemeLookup lexemeLookup)
         {
             if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
             if (!inputStream.CanRead)
                 throw new ArgumentException("The stream could not be read from.", nameof(inputStream));
 
-            _initialState = initialState ?? throw new ArgumentNullException(nameof(initialState));
-
             _reader = new StreamReader(inputStream);
             _buffer = new char[lookaheadBufferSize];
             _endOfStream = false;
+            _lexemeLookup = lexemeLookup ?? throw new ArgumentNullException(nameof(lexemeLookup));
 
             AdvanceBuffer(); //Preload the buffer
         }
@@ -35,14 +36,18 @@
             if (_endOfStream)
                 return EofLexeme;
 
-            var currentState = _initialState;
+            var currentState = _lexemeLookup[specifiedLexeme];
             var lexeme = new List<char>();
 
             while (!(currentState is TerminalState))
             {
+                //TODO: Change this to get the transition function, then move it to the next state.
+                //TODO: Trigger the change for the buffer advancing to whether the function was an
+                //TODO: epsilon edge, not the state type.
                 currentState = currentState.TransitionToNextState(_buffer, lexeme);
 
-                AdvanceBuffer(); //Always leave the buffer one read ahead
+                if(!(currentState is BufferPreservingTerminalState))
+                    AdvanceBuffer(); //Always leave the buffer one read ahead if we're not done
             }
 
             var terminalStateLexeme = new Lexeme(((TerminalState)currentState).Type, new string(lexeme.ToArray()));
