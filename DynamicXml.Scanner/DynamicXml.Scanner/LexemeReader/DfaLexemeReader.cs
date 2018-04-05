@@ -39,6 +39,9 @@ namespace DynamicXml.Scanner.LexemeReader
             var currentState = _lexemeLookup[specifiedLexeme];
             var lexeme = new List<char>();
 
+            if((currentState is TerminalState))
+                AdvanceBuffer();
+
             while (!(currentState is TerminalState))
             {
                 //TODO: Change this to get the transition function, then move it to the next state.
@@ -46,7 +49,7 @@ namespace DynamicXml.Scanner.LexemeReader
                 //TODO: epsilon edge, not the state type.
                 currentState = currentState.TransitionToNextState(_buffer, lexeme);
 
-                if(!(currentState is BufferPreservingTerminalState))
+                if(!(currentState is IBufferPreservingState))
                     AdvanceBuffer(); //Always leave the buffer one read ahead if we're not done
             }
 

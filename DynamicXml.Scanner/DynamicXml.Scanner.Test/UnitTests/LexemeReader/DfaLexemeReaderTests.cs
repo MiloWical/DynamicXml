@@ -75,7 +75,8 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
         [TestMethod]
         public void XmlPrologLexemeizingTest()
         {
-            const string testString = "<?xml version=\"1.0\" encoding='UTF-8'?>";
+            //const string testString = "<?xml version=\"1.0\" encoding='UTF-8'?>";
+            const string testString = "<?xml version=\"1\" encoding='UTF-8'?>";
 
             var expectedLexemes = new[]
             {
@@ -113,7 +114,7 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
 
             foreach (var lexemeType in expectedLexemes)
             {
-                var lexeme = reader.GetNextLexemeFromBuffer();
+                var lexeme = reader.GetNextLexemeFromBuffer(lexemeType);
                 Assert.AreEqual(lexemeType, lexeme.Type);
 
                 if (lexeme.Type == LexemeType.Identifier)

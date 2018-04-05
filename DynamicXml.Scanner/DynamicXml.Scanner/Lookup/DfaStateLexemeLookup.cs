@@ -31,6 +31,8 @@ namespace DynamicXml.Scanner.DFA
 
         private static IState _versionDigitNonterminalState;
 
+        private static IState _versionNonterminalState;
+
         private static IState _versionDotNonterminalState;
 
         private static IState _initialXmlState;
@@ -64,7 +66,7 @@ namespace DynamicXml.Scanner.DFA
             _identifierTerminalState =
                 new BufferPreservingTerminalState(LexemeType.Identifier, nameof(_identifierTerminalState));
             _versionTerminalState =
-                new BufferPreservingTerminalState(LexemeType.Version, nameof(_versionDigitNonterminalState));
+                new BufferPreservingTerminalState(LexemeType.Version, nameof(_versionTerminalState));
 
             _whitespaceSymbolNonterminalState = new NonterminalState(new IEdge[]
             {
@@ -83,17 +85,11 @@ namespace DynamicXml.Scanner.DFA
                     _identifierTerminalState)
             }, nameof(_identifierNonterminalState));
 
-            //_versionDigitNonterminalState = new NonterminalState(new IEdge[]
-            //{
-            //    new LocalEdge(buffer => char.IsDigit(buffer[0])),
-            //    new TransitionEdge(buffer => buffer[0] == '.', _versionDotNonterminalState),
-            //    new TransitionEdge(buffer => !char.IsDigit(buffer[0]) && buffer[0] != '.', _versionTerminalState)
-            //}, nameof(_versionDigitNonterminalState));
-
-            //_versionDotNonterminalState = new NonterminalState(new IEdge[]
-            //{
-            //    new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionDigitNonterminalState)
-            //});
+            _versionNonterminalState = new NonterminalState(new IEdge[]
+            {
+                new LocalEdge(buffer => char.IsDigit(buffer[0])),
+                new TransitionEdge(buffer => !char.IsDigit(buffer[0]), _versionTerminalState) 
+            }, nameof(_versionNonterminalState));
 
             _initialXmlState = new NonterminalState(new IEdge[]
             {
@@ -108,7 +104,7 @@ namespace DynamicXml.Scanner.DFA
                 new TransitionEdge(buffer => buffer[0] == '?', _questionMarkSymbolTerminalState),
                 new TransitionEdge(buffer => char.IsWhiteSpace(buffer[0]), _whitespaceSymbolNonterminalState),
                 new TransitionEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0]), _identifierNonterminalState),
-                //new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionDigitNonterminalState)
+                new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
             });
         }
 
@@ -133,7 +129,7 @@ namespace DynamicXml.Scanner.DFA
                     //{ LexemeType.OptionalWhitespaceSymbol, ??? },
                     { LexemeType.ColonSymbol, _colonSymbolTerminalState },
                     { LexemeType.QuestionMarkSymbol, _questionMarkSymbolTerminalState },
-                    //{ LexemeType.Version, _versionDigitNonterminalState },
+                    { LexemeType.Version, _versionNonterminalState },
                     { LexemeType.Identifier, _identifierNonterminalState },
                     //{ LexemeType.Data, ??? },
                     //{ LexemeType.Eof, ??? }
