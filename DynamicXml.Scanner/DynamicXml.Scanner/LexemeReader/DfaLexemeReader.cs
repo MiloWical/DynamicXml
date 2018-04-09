@@ -39,7 +39,7 @@ namespace DynamicXml.Scanner.LexemeReader
             var currentState = _lexemeLookup[specifiedLexeme];
             var lexeme = new List<char>();
 
-            if((currentState is TerminalState))
+            if(currentState is TerminalState)
                 AdvanceBuffer();
 
             while (!(currentState is TerminalState))

@@ -88,8 +88,14 @@ namespace DynamicXml.Scanner.DFA
             _versionNonterminalState = new NonterminalState(new IEdge[]
             {
                 new LocalEdge(buffer => char.IsDigit(buffer[0])),
+                new TransitionEdge(buffer => buffer[0] == '.', _versionDotNonterminalState), 
                 new TransitionEdge(buffer => !char.IsDigit(buffer[0]), _versionTerminalState) 
             }, nameof(_versionNonterminalState));
+
+            _versionDotNonterminalState = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
+            }, nameof(_versionDotNonterminalState));
 
             _initialXmlState = new NonterminalState(new IEdge[]
             {

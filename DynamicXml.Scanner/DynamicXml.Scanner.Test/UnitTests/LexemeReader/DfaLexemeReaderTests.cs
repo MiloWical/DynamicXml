@@ -76,7 +76,7 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
         public void XmlPrologLexemeizingTest()
         {
             //const string testString = "<?xml version=\"1.0\" encoding='UTF-8'?>";
-            const string testString = "<?xml version=\"1\" encoding='UTF-8'?>";
+            const string testString = "<?xml version=\"1.\" encoding='UTF-8'?>";
 
             var expectedLexemes = new[]
             {
