@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DFA\Container\DfaStateContainer.cs" />
+    <Compile Include="DFA\Container\IStateContainer.cs" />
     <Compile Include="DFA\Edge\EpsilonEdge.cs" />
     <Compile Include="DFA\Edge\LocalEdge.cs" />
     <Compile Include="DFA\Edge\TransitionEdge.cs" />
