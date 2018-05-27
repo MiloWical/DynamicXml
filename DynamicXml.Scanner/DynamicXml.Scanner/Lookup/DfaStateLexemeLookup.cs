@@ -2,11 +2,13 @@
 
 namespace DynamicXml.Scanner.DFA
 {
+    using System;
     using Edge;
     using Lexeme;
     using Lookup;
     using State;
     using System.Linq;
+    using Container;
 
     public class DfaStateLexemeLookup : ILexemeLookup
     {
@@ -37,10 +39,12 @@ namespace DynamicXml.Scanner.DFA
 
         private static IState _initialXmlState;
 
-        private static Dictionary<LexemeType, IState> _lexemeToStateMap;
+        private static IStateContainer _stateContainer;
 
-        public DfaStateLexemeLookup()
+        public DfaStateLexemeLookup(IStateContainer stateContainer)
         {
+            _stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(stateContainer));
+
             InitializeStates();
             BuildLexemeToStateMap();
         }
@@ -85,17 +89,17 @@ namespace DynamicXml.Scanner.DFA
                     _identifierTerminalState)
             }, nameof(_identifierNonterminalState));
 
-            _versionNonterminalState = new NonterminalState(new IEdge[]
-            {
-                new LocalEdge(buffer => char.IsDigit(buffer[0])),
-                new TransitionEdge(buffer => buffer[0] == '.', _versionDotNonterminalState), 
-                new TransitionEdge(buffer => !char.IsDigit(buffer[0]), _versionTerminalState) 
-            }, nameof(_versionNonterminalState));
+            //_versionNonterminalState = new NonterminalState(new IEdge[]
+            //{
+            //    new LocalEdge(buffer => char.IsDigit(buffer[0])),
+            //    new TransitionEdge(buffer => buffer[0] == '.', _versionDotNonterminalState), 
+            //    new TransitionEdge(buffer => !char.IsDigit(buffer[0]), _versionTerminalState) 
+            //}, nameof(_versionNonterminalState));
 
-            _versionDotNonterminalState = new NonterminalState(new IEdge[]
-            {
-                new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
-            }, nameof(_versionDotNonterminalState));
+            //_versionDotNonterminalState = new NonterminalState(new IEdge[]
+            //{
+            //    new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
+            //}, nameof(_versionDotNonterminalState));
 
             _initialXmlState = new NonterminalState(new IEdge[]
             {
@@ -110,7 +114,7 @@ namespace DynamicXml.Scanner.DFA
                 new TransitionEdge(buffer => buffer[0] == '?', _questionMarkSymbolTerminalState),
                 new TransitionEdge(buffer => char.IsWhiteSpace(buffer[0]), _whitespaceSymbolNonterminalState),
                 new TransitionEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0]), _identifierNonterminalState),
-                new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
+                //new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
             });
         }
 
@@ -118,35 +122,55 @@ namespace DynamicXml.Scanner.DFA
         {
             //TODO: Finish the states needed to complete the map!
 
-            _lexemeToStateMap =
-                new Dictionary<LexemeType, IState>
-                {
-                    { LexemeType.Unspecified, null },
-                    { LexemeType.Undefined, null },
-                    //{ LexemeType.Comment, ??? },
-                    //{ LexemeType.CData, ??? },
-                    { LexemeType.LessThanSymbol, _lessThanSymbolTerminalState },
-                    { LexemeType.GreaterThanSymbol, _greaterThanSymbolTerminalState },
-                    { LexemeType.SlashSymbol, _slashSymbolTerminalState },
-                    { LexemeType.EqualSymbol, _equalSymbolTerminalState },
-                    { LexemeType.SingleQuoteSymbol, _singleQuoteSymbolTerminalState },
-                    { LexemeType.DoubleQuoteSymbol, _doubleQuoteSymbolTerminalState },
-                    { LexemeType.WhitespaceSymbol, _whitespaceSymbolNonterminalState },
-                    //{ LexemeType.OptionalWhitespaceSymbol, ??? },
-                    { LexemeType.ColonSymbol, _colonSymbolTerminalState },
-                    { LexemeType.QuestionMarkSymbol, _questionMarkSymbolTerminalState },
-                    { LexemeType.Version, _versionNonterminalState },
-                    { LexemeType.Identifier, _identifierNonterminalState },
-                    //{ LexemeType.Data, ??? },
-                    //{ LexemeType.Eof, ??? }
-                };
+            //_lexemeToStateMap =
+            //    new Dictionary<LexemeType, IState>
+            //    {
+            //        { LexemeType.Unspecified, null },
+            //        { LexemeType.Undefined, null },
+            //        //{ LexemeType.Comment, ??? },
+            //        //{ LexemeType.CData, ??? },
+            //        { LexemeType.LessThanSymbol, _lessThanSymbolTerminalState },
+            //        { LexemeType.GreaterThanSymbol, _greaterThanSymbolTerminalState },
+            //        { LexemeType.SlashSymbol, _slashSymbolTerminalState },
+            //        { LexemeType.EqualSymbol, _equalSymbolTerminalState },
+            //        { LexemeType.SingleQuoteSymbol, _singleQuoteSymbolTerminalState },
+            //        { LexemeType.DoubleQuoteSymbol, _doubleQuoteSymbolTerminalState },
+            //        { LexemeType.WhitespaceSymbol, _whitespaceSymbolNonterminalState },
+            //        //{ LexemeType.OptionalWhitespaceSymbol, ??? },
+            //        { LexemeType.ColonSymbol, _colonSymbolTerminalState },
+            //        { LexemeType.QuestionMarkSymbol, _questionMarkSymbolTerminalState },
+            //        { LexemeType.Version, _versionNonterminalState },
+            //        { LexemeType.Identifier, _identifierNonterminalState },
+            //        //{ LexemeType.Data, ??? },
+            //        //{ LexemeType.Eof, ??? }
+            //    };
+
+            _stateContainer.Register(null, LexemeType.Unspecified.ToString());
+            _stateContainer.Register(null, LexemeType.Undefined.ToString());
+            //_stateContainer.Register(???, LexemeType.Comment.ToString());
+            //_stateContainer.Register(???, LexemeType.CData.ToString());
+            _stateContainer.Register(_lessThanSymbolTerminalState, LexemeType.LessThanSymbol.ToString());
+            _stateContainer.Register(_greaterThanSymbolTerminalState, LexemeType.GreaterThanSymbol.ToString());
+            _stateContainer.Register(_slashSymbolTerminalState, LexemeType.SlashSymbol.ToString());
+            _stateContainer.Register(_equalSymbolTerminalState, LexemeType.EqualSymbol.ToString());
+            _stateContainer.Register(_singleQuoteSymbolTerminalState, LexemeType.SingleQuoteSymbol.ToString());
+            _stateContainer.Register(_doubleQuoteSymbolTerminalState, LexemeType.DoubleQuoteSymbol.ToString());
+            _stateContainer.Register(_whitespaceSymbolNonterminalState, LexemeType.WhitespaceSymbol.ToString());
+            //_stateContainer.Register(???, LexemeType.OptionalWhitespaceSymbol.ToString());
+            _stateContainer.Register(_colonSymbolTerminalState, LexemeType.ColonSymbol.ToString());
+            _stateContainer.Register(_questionMarkSymbolTerminalState, LexemeType.QuestionMarkSymbol.ToString());
+            _stateContainer.Register(_versionNonterminalState, LexemeType.Version.ToString());
+            _stateContainer.Register(_identifierNonterminalState, LexemeType.Identifier.ToString());
+            //_stateContainer.Register(???, LexemeType.Data);
+            //_stateContainer.Register(???, LexemeType.Eof);
         }
 
         public IState this[LexemeType type] => GetStartState(type);
 
         public static IState GetStartState(LexemeType type = LexemeType.Unspecified)
         {
-            return type == LexemeType.Unspecified ? _initialXmlState : _lexemeToStateMap[type];
+            //return type == LexemeType.Unspecified ? _initialXmlState : _lexemeToStateMap[type];
+            return type == LexemeType.Unspecified ? _initialXmlState : _stateContainer[type.ToString()];
         }
     }
 }

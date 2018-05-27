@@ -17,26 +17,30 @@ namespace DynamicXml.Scanner.DFA.Container
 
     using System;
     using System.Collections.Concurrent;
+    using Edge;
     using State;
 
     #endregion
 
+    /// <inheritdoc />
     /// <summary>
     /// Class DfaStateContainer.
     /// </summary>
-    /// <seealso cref="DynamicXml.Scanner.DFA.Container.IStateContainer" />
+    /// <seealso cref="T:DynamicXml.Scanner.DFA.Container.IStateContainer" />
     public class DfaStateContainer : IStateContainer
     {
+        /// <summary>
+        /// The state dictionary
+        /// </summary>
         private static readonly ConcurrentDictionary<string, IState> StateDictionary = new ConcurrentDictionary<string, IState>();
 
         /// <inheritdoc />
         /// <summary>
-        /// Gets the <see cref="T:DynamicXml.Scanner.DFA.State.IState" /> with the specified state name.
+        /// Gets the <see cref="T:DynamicXml.Scanner.DFA.State.IState" /> with the specified state type.
         /// </summary>
-        /// <param name="stateName">Name of the state.</param>
+        /// <param name="stateType">Type of the state.</param>
         /// <returns>IState.</returns>
-        /// <exception cref="T:System.NotImplementedException"></exception>
-        public IState this[string stateName] => StateDictionary[stateName];
+        public IState this[string stateType] => StateDictionary[stateType];
 
         /// <inheritdoc />
         /// <summary>
@@ -44,12 +48,23 @@ namespace DynamicXml.Scanner.DFA.Container
         /// </summary>
         /// <param name="state">The state.</param>
         /// <param name="name">The name.</param>
-        /// <exception cref="T:System.NotImplementedException"></exception>
-        public void Register(IState state, string name)
+        public void Register(IState state, string name = null)
         {
-            if(string.IsNullOrEmpty(name)) throw new ArgumentException("egistrations of states must have a non-empty, non-ull  name.", nameof(name));
-
-            StateDictionary[name] = state;
+            if (name == null)
+                StateDictionary[nameof(state)] = state;
+            else
+                StateDictionary[name] = state;
+        }
+        
+        /// <summary>
+        /// Generates the transition edge to the next state.
+        /// </summary>
+        /// <param name="nextStateName">Name of the next state.</param>
+        /// <param name="transitionFunction">The transition function.</param>
+        /// <returns>IEdge.</returns>
+        public IEdge GenerateTransitionEdgeTo(string nextStateName, Func<char[], bool> transitionFunction)
+        {
+            return new TransitionEdge(transitionFunction, this[nextStateName]);
         }
     }
 }

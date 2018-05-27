@@ -8,6 +8,7 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Text;
+    using DFA.Container;
     using DFA.Edge;
     using DFA.State;
     using DynamicXml.Scanner.LexemeReader;
@@ -43,7 +44,8 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
                 LexemeType.Eof
             };
 
-            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaStateLexemeLookup());
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1,
+                new DfaStateLexemeLookup(new DfaStateContainer()));
 
             foreach (var lexemeType in expectedLexemes)
             {
@@ -63,7 +65,8 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
                 LexemeType.Eof
             };
 
-            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaStateLexemeLookup());
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1,
+                new DfaStateLexemeLookup(new DfaStateContainer()));
 
             foreach (var lexemeType in expectedLexemes)
             {
@@ -110,7 +113,8 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
 
             var expectedIdentifierIndex = 0;
 
-            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaStateLexemeLookup());
+            var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1,
+                new DfaStateLexemeLookup(new DfaStateContainer()));
 
             foreach (var lexemeType in expectedLexemes)
             {
