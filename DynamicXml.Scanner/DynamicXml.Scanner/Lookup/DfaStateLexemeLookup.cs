@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using DFA.BufferReader;
     using DFA.Container;
     using DFA.Edge;
     using DFA.State;
@@ -40,10 +41,12 @@
 
         private readonly Action _bufferAdvanceAction;
 
-        public DfaStateLexemeLookup(IStateContainer stateContainer, Action bufferAdvanceAction)
+        public DfaStateLexemeLookup(IStateContainer stateContainer, IBufferReader bufferReader)
         {
             _stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(stateContainer));
-            _bufferAdvanceAction = bufferAdvanceAction ?? throw new ArgumentNullException(nameof(bufferAdvanceAction));
+            if (bufferReader == null) throw new ArgumentNullException(nameof(bufferReader));
+
+            _bufferAdvanceAction = bufferReader.AdvanceBuffer;
 
             InitializeStates();
             BuildLexemeToStateMap();

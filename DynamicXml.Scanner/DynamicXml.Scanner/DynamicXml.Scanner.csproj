@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DFA\BufferReader\IBufferReader.cs" />
+    <Compile Include="DFA\BufferReader\StreamBufferReader.cs" />
+    <Compile Include="DFA\BufferReader\StringBufferReader.cs" />
     <Compile Include="DFA\Container\DfaStateContainer.cs" />
     <Compile Include="DFA\Container\IStateContainer.cs" />
     <Compile Include="DFA\Edge\EpsilonEdge.cs" />
@@ -65,7 +68,6 @@
     <Compile Include="Scanner\XmlScanner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DFA\BufferReader\" />
     <Folder Include="Lookup\Types\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
