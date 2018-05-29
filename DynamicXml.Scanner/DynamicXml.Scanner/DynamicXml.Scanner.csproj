@@ -43,16 +43,13 @@
     <Compile Include="DFA\Container\DfaStateContainer.cs" />
     <Compile Include="DFA\Container\IStateContainer.cs" />
     <Compile Include="DFA\Edge\EpsilonEdge.cs" />
-    <Compile Include="DFA\Edge\LocalEdge.cs" />
     <Compile Include="DFA\Edge\TransitionEdge.cs" />
     <Compile Include="DFA\Edge\IEdge.cs" />
-    <Compile Include="DFA\State\BufferPreservingNonterminalState.cs" />
-    <Compile Include="DFA\State\IBufferPreservingState.cs" />
+    <Compile Include="DFA\State\Factory\IStateFactory.cs" />
     <Compile Include="Lookup\DfaStateLexemeLookup.cs" />
     <Compile Include="DFA\State\NonterminalState.cs" />
     <Compile Include="DFA\State\StateBase.cs" />
     <Compile Include="DFA\State\IState.cs" />
-    <Compile Include="DFA\State\BufferPreservingTerminalState.cs" />
     <Compile Include="DFA\State\TerminalState.cs" />
     <Compile Include="DFA\State\XmlStates.cs" />
     <Compile Include="Exception\IllegalBufferStateException.cs" />
@@ -67,7 +64,10 @@
     <Compile Include="Scanner\IScanner.cs" />
     <Compile Include="Scanner\XmlScanner.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DFA\BufferReader\" />
+    <Folder Include="Lookup\Types\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)..\Reference</PostBuildEvent>

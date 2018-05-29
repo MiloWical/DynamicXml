@@ -5,8 +5,8 @@
 
     public class EpsilonEdge : TransitionEdge
     {
-        public EpsilonEdge(Func<char[], bool> transitionFunction, IState nextState) : base(transitionFunction,
-            nextState)
+        public EpsilonEdge(Func<char[], bool> transitionFunction, Func<IState> edgeFunction) : base(transitionFunction,
+            edgeFunction, () => { })
         {
         }
     }

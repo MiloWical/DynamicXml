@@ -37,13 +37,5 @@ namespace DynamicXml.Scanner.DFA.Container
         /// <param name="state">The state.</param>
         /// <param name="name">The name.</param>
         void Register(IState state, string name);
-
-        /// <summary>
-        /// Generates the transition edge to the next state.
-        /// </summary>
-        /// <param name="nextStateName">Name of the next state.</param>
-        /// <param name="transitionFunction">The transition function.</param>
-        /// <returns>IEdge.</returns>
-        IEdge GenerateTransitionEdgeTo(string nextStateName, Func<char[], bool> transitionFunction);
     }
 }

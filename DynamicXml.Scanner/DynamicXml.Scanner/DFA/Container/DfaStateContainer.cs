@@ -55,16 +55,5 @@ namespace DynamicXml.Scanner.DFA.Container
             else
                 StateDictionary[name] = state;
         }
-        
-        /// <summary>
-        /// Generates the transition edge to the next state.
-        /// </summary>
-        /// <param name="nextStateName">Name of the next state.</param>
-        /// <param name="transitionFunction">The transition function.</param>
-        /// <returns>IEdge.</returns>
-        public IEdge GenerateTransitionEdgeTo(string nextStateName, Func<char[], bool> transitionFunction)
-        {
-            return new TransitionEdge(transitionFunction, this[nextStateName]);
-        }
     }
 }

@@ -13,6 +13,7 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
     using DFA.State;
     using DynamicXml.Scanner.LexemeReader;
     using Lexeme;
+    using Lookup;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     #endregion
@@ -45,7 +46,7 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
             };
 
             var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1,
-                new DfaStateLexemeLookup(new DfaStateContainer()));
+                new DfaStateLexemeLookup(new DfaStateContainer(), ));
 
             foreach (var lexemeType in expectedLexemes)
             {

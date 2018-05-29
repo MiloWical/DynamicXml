@@ -8,14 +8,19 @@
     {
         public string Name { get; }
 
-        protected IEdge[] Transitions;
+        protected ICollection<IEdge> Transitions;
 
-        protected StateBase(IEdge[] transitions, string name = null)
+        protected StateBase(ICollection<IEdge> transitions, string name = null)
         {
             Transitions = transitions ?? throw new ArgumentNullException(nameof(transitions));
             Name = name;
         }
 
         public abstract IState TransitionToNextState(char[] buffer, ICollection<char> currentLexeme);
+        public void AddEdge(IEdge newEdge)
+        {
+            if(newEdge != null)
+                Transitions.Add(newEdge);
+        }
     }
 }

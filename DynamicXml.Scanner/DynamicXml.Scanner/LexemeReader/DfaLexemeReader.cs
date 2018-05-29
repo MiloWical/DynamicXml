@@ -49,8 +49,8 @@ namespace DynamicXml.Scanner.LexemeReader
                 //TODO: epsilon edge, not the state type.
                 currentState = currentState.TransitionToNextState(_buffer, lexeme);
 
-                if(!(currentState is IBufferPreservingState))
-                    AdvanceBuffer(); //Always leave the buffer one read ahead if we're not done
+                //if(!(currentState is IBufferPreservingState))
+                //    AdvanceBuffer(); //Always leave the buffer one read ahead if we're not done
             }
 
             var terminalStateLexeme = new Lexeme(((TerminalState)currentState).Type, new string(lexeme.ToArray()));

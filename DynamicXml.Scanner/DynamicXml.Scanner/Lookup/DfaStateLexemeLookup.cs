@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace DynamicXml.Scanner.DFA
+﻿namespace DynamicXml.Scanner.Lookup
 {
     using System;
-    using Edge;
-    using Lexeme;
-    using Lookup;
-    using State;
     using System.Linq;
-    using Container;
+    using DFA.Container;
+    using DFA.Edge;
+    using DFA.State;
+    using Lexeme;
 
     public class DfaStateLexemeLookup : ILexemeLookup
     {
@@ -41,9 +38,12 @@ namespace DynamicXml.Scanner.DFA
 
         private static IStateContainer _stateContainer;
 
-        public DfaStateLexemeLookup(IStateContainer stateContainer)
+        private readonly Action _bufferAdvanceAction;
+
+        public DfaStateLexemeLookup(IStateContainer stateContainer, Action bufferAdvanceAction)
         {
             _stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(stateContainer));
+            _bufferAdvanceAction = bufferAdvanceAction ?? throw new ArgumentNullException(nameof(bufferAdvanceAction));
 
             InitializeStates();
             BuildLexemeToStateMap();
@@ -66,27 +66,31 @@ namespace DynamicXml.Scanner.DFA
                 new TerminalState(LexemeType.QuestionMarkSymbol, nameof(_questionMarkSymbolTerminalState));
 
             _whitespaceSymbolTerminalState =
-                new BufferPreservingTerminalState(LexemeType.WhitespaceSymbol, nameof(_whitespaceSymbolTerminalState));
+                new TerminalState(LexemeType.WhitespaceSymbol, nameof(_whitespaceSymbolTerminalState));
             _identifierTerminalState =
-                new BufferPreservingTerminalState(LexemeType.Identifier, nameof(_identifierTerminalState));
+                new TerminalState(LexemeType.Identifier, nameof(_identifierTerminalState));
             _versionTerminalState =
-                new BufferPreservingTerminalState(LexemeType.Version, nameof(_versionTerminalState));
+                new TerminalState(LexemeType.Version, nameof(_versionTerminalState));
 
             _whitespaceSymbolNonterminalState = new NonterminalState(new IEdge[]
             {
-                new LocalEdge(buffer => buffer != null && char.IsWhiteSpace(buffer[0])),
-                new TransitionEdge(buffer => buffer == null || !char.IsWhiteSpace(buffer[0]),
-                    _whitespaceSymbolTerminalState)
+                new TransitionEdge(buffer => buffer != null && char.IsWhiteSpace(buffer[0]),
+                    () => _stateContainer[nameof(_whitespaceSymbolNonterminalState)],
+                    _bufferAdvanceAction),
+                new EpsilonEdge(buffer => buffer == null || !char.IsWhiteSpace(buffer[0]),
+                    () => _stateContainer[nameof(_whitespaceSymbolTerminalState)])
             }, nameof(_whitespaceSymbolNonterminalState));
 
             _identifierCharacters = new[] { '-', '_', '.' };
 
             _identifierNonterminalState = new NonterminalState(new IEdge[]
             {
-                new LocalEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0])),
-                new TransitionEdge(
+                new TransitionEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0]),
+                    () => _stateContainer[nameof(_identifierNonterminalState)],
+                    _bufferAdvanceAction),
+                new EpsilonEdge(
                     buffer => !(char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0])),
-                    _identifierTerminalState)
+                    () => _stateContainer[nameof(_identifierTerminalState)]) 
             }, nameof(_identifierNonterminalState));
 
             //_versionNonterminalState = new NonterminalState(new IEdge[]
@@ -103,17 +107,36 @@ namespace DynamicXml.Scanner.DFA
 
             _initialXmlState = new NonterminalState(new IEdge[]
             {
-                new TransitionEdge(buffer => buffer[0] == ':', _colonSymbolTerminalState),
-                new TransitionEdge(buffer => buffer[0] == '"', _doubleQuoteSymbolTerminalState),
-                new TransitionEdge(buffer => buffer[0] == '\'', _singleQuoteSymbolTerminalState),
-
-                new TransitionEdge(buffer => buffer[0] == '=', _equalSymbolTerminalState),
-                new TransitionEdge(buffer => buffer[0] == '/', _slashSymbolTerminalState),
-                new TransitionEdge(buffer => buffer[0] == '>', _greaterThanSymbolTerminalState),
-                new TransitionEdge(buffer => buffer[0] == '<', _lessThanSymbolTerminalState),
-                new TransitionEdge(buffer => buffer[0] == '?', _questionMarkSymbolTerminalState),
-                new TransitionEdge(buffer => char.IsWhiteSpace(buffer[0]), _whitespaceSymbolNonterminalState),
-                new TransitionEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0]), _identifierNonterminalState),
+                new TransitionEdge(buffer => buffer[0] == ':',
+                    () => _stateContainer[nameof(_colonSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer[0] == '"', 
+                    () => _stateContainer[nameof(_doubleQuoteSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer[0] == '\'', 
+                    () => _stateContainer[nameof(_singleQuoteSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer[0] == '=',
+                    () => _stateContainer[nameof(_equalSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer[0] == '/', 
+                    () => _stateContainer[nameof(_slashSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer[0] == '>', 
+                    () => _stateContainer[nameof(_greaterThanSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer[0] == '<', 
+                    () => _stateContainer[nameof(_lessThanSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer[0] == '?',
+                    () => _stateContainer[nameof(_questionMarkSymbolTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => char.IsWhiteSpace(buffer[0]), 
+                    () => _stateContainer[nameof(_whitespaceSymbolNonterminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0]), 
+                    () => _stateContainer[nameof(_identifierNonterminalState)],
+                    _bufferAdvanceAction)
                 //new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
             });
         }
