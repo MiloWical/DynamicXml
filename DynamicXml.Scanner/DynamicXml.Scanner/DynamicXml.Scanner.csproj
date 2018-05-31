@@ -48,7 +48,6 @@
     <Compile Include="DFA\Edge\EpsilonEdge.cs" />
     <Compile Include="DFA\Edge\TransitionEdge.cs" />
     <Compile Include="DFA\Edge\IEdge.cs" />
-    <Compile Include="DFA\State\Factory\IStateFactory.cs" />
     <Compile Include="Lookup\DfaStateLexemeLookup.cs" />
     <Compile Include="DFA\State\NonterminalState.cs" />
     <Compile Include="DFA\State\StateBase.cs" />

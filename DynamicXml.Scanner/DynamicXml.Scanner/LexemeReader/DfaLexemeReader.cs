@@ -10,37 +10,44 @@ namespace DynamicXml.Scanner.LexemeReader
 
     public class DfaLexemeReader : ILexemeReader
     {
-        private readonly StreamReader _reader;
-        private char[] _buffer;
-        private bool _endOfStream;
+        //private readonly StreamReader _reader;
+        //private char[] _buffer;
+        //private bool _endOfStream;
         private readonly ILexemeLookup _lexemeLookup;
 
         private static readonly Lexeme EofLexeme = new Lexeme(LexemeType.Eof, string.Empty);
 
-        public DfaLexemeReader(Stream inputStream, int lookaheadBufferSize, ILexemeLookup lexemeLookup)
-        {
-            if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
-            if (!inputStream.CanRead)
-                throw new ArgumentException("The stream could not be read from.", nameof(inputStream));
+        //public DfaLexemeReader(Stream inputStream, int lookaheadBufferSize, ILexemeLookup lexemeLookup)
+        //{
+        //    if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
+        //    if (!inputStream.CanRead)
+        //        throw new ArgumentException("The stream could not be read from.", nameof(inputStream));
 
-            _reader = new StreamReader(inputStream);
-            _buffer = new char[lookaheadBufferSize];
-            _endOfStream = false;
+        //    _reader = new StreamReader(inputStream);
+        //    _buffer = new char[lookaheadBufferSize];
+        //    _endOfStream = false;
+        //    _lexemeLookup = lexemeLookup ?? throw new ArgumentNullException(nameof(lexemeLookup));
+
+        //    AdvanceBuffer(); //Preload the buffer
+        //}
+
+        public DfaLexemeReader(ILexemeLookup lexemeLookup)
+        {
             _lexemeLookup = lexemeLookup ?? throw new ArgumentNullException(nameof(lexemeLookup));
 
-            AdvanceBuffer(); //Preload the buffer
+            //AdvanceBuffer(); //Preload the buffer
         }
 
         public Lexeme GetNextLexemeFromBuffer(LexemeType specifiedLexeme = LexemeType.Unspecified)
         {
-            if (_endOfStream)
-                return EofLexeme;
+            //if (_endOfStream)
+            //    return EofLexeme;
 
             var currentState = _lexemeLookup[specifiedLexeme];
             var lexeme = new List<char>();
 
-            if(currentState is TerminalState)
-                AdvanceBuffer();
+            //if(currentState is TerminalState)
+            //    AdvanceBuffer();
 
             while (!(currentState is TerminalState))
             {
@@ -58,18 +65,18 @@ namespace DynamicXml.Scanner.LexemeReader
             return terminalStateLexeme;
         }
 
-        private void AdvanceBuffer()
-        {
-            if (_endOfStream) return;
+        //private void AdvanceBuffer()
+        //{
+        //    if (_endOfStream) return;
 
-            var charactersRead = _reader.Read(_buffer, 0, _buffer.Length);
+        //    var charactersRead = _reader.Read(_buffer, 0, _buffer.Length);
 
-            if (charactersRead > 0) return;
+        //    if (charactersRead > 0) return;
 
-            _endOfStream = true;
-            _reader.Close();
-            _reader.Dispose();
-            _buffer = null;
-        }
+        //    _endOfStream = true;
+        //    _reader.Close();
+        //    _reader.Dispose();
+        //    _buffer = null;
+        //}
     }
 }

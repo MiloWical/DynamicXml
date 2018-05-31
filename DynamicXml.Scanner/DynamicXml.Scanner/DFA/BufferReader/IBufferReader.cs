@@ -19,6 +19,12 @@ namespace DynamicXml.Scanner.DFA.BufferReader
     public interface IBufferReader
     {
         /// <summary>
+        /// Gets the buffer.
+        /// </summary>
+        /// <value>The buffer.</value>
+        char[] Buffer { get; }
+
+        /// <summary>
         /// Gets a value indicating whether [end of stream].
         /// </summary>
         /// <value><c>true</c> if [end of stream]; otherwise, <c>false</c>.</value>

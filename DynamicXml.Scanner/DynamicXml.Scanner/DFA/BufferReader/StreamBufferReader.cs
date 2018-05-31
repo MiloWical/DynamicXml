@@ -35,6 +35,17 @@ namespace DynamicXml.Scanner.DFA.BufferReader
 
         /// <inheritdoc />
         /// <summary>
+        /// Gets the buffer.
+        /// </summary>
+        /// <value>The buffer.</value>
+        /// <remarks>This function creates a copy of the
+        /// buffer so that any changes applied to it in the 
+        /// client application won't alter the state of
+        /// the buffer in the buffer reader.</remarks>
+        public char[] Buffer => (char[]) _buffer.Clone();
+
+        /// <inheritdoc />
+        /// <summary>
         /// Gets a value indicating whether [end of stream].
         /// </summary>
         /// <value><c>true</c> if [end of stream]; otherwise, <c>false</c>.</value>
@@ -71,8 +82,11 @@ namespace DynamicXml.Scanner.DFA.BufferReader
             _reader = new StreamReader(inputStream);
             _buffer = new char[lookaheadBufferSize];
             EndOfStream = false;
+
+            AdvanceBuffer(); //Preload the buffer for the first lexeme lookup.
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Advances the buffer.
         /// </summary>
