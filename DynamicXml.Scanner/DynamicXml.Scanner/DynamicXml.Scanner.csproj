@@ -48,7 +48,7 @@
     <Compile Include="DFA\Edge\EpsilonEdge.cs" />
     <Compile Include="DFA\Edge\TransitionEdge.cs" />
     <Compile Include="DFA\Edge\IEdge.cs" />
-    <Compile Include="Lookup\DfaStateLexemeLookup.cs" />
+    <Compile Include="Processor\DfaLexemeProcessor.cs" />
     <Compile Include="DFA\State\NonterminalState.cs" />
     <Compile Include="DFA\State\StateBase.cs" />
     <Compile Include="DFA\State\IState.cs" />
@@ -56,7 +56,7 @@
     <Compile Include="DFA\State\XmlStates.cs" />
     <Compile Include="Exception\IllegalBufferStateException.cs" />
     <Compile Include="LexemeReader\DfaLexemeReader.cs" />
-    <Compile Include="Lookup\ILexemeLookup.cs" />
+    <Compile Include="Processor\ILexemeProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LexemeReader\ILexemeReader.cs" />
     <Compile Include="LexemeReader\RegexLexemeReader.cs" />
@@ -67,7 +67,7 @@
     <Compile Include="Scanner\XmlScanner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Lookup\Types\" />
+    <Folder Include="Processor\Types\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

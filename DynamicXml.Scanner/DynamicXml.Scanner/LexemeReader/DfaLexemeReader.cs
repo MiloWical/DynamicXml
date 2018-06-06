@@ -1,21 +1,20 @@
-﻿using DynamicXml.Scanner.Lookup;
-
-namespace DynamicXml.Scanner.LexemeReader
+﻿namespace DynamicXml.Scanner.LexemeReader
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using DFA.State;
     using Lexeme;
+    using Processor;
 
     public class DfaLexemeReader : ILexemeReader
     {
         //private readonly StreamReader _reader;
         //private char[] _buffer;
         //private bool _endOfStream;
-        private readonly ILexemeLookup _lexemeLookup;
+        private readonly ILexemeProcessor _lexemeProcessor;
 
-        private static readonly Lexeme EofLexeme = new Lexeme(LexemeType.Eof, string.Empty);
+        //private static readonly Lexeme EofLexeme = new Lexeme(LexemeType.Eof, string.Empty);
 
         //public DfaLexemeReader(Stream inputStream, int lookaheadBufferSize, ILexemeLookup lexemeLookup)
         //{
@@ -31,9 +30,9 @@ namespace DynamicXml.Scanner.LexemeReader
         //    AdvanceBuffer(); //Preload the buffer
         //}
 
-        public DfaLexemeReader(ILexemeLookup lexemeLookup)
+        public DfaLexemeReader(ILexemeProcessor lexemeProcessor)
         {
-            _lexemeLookup = lexemeLookup ?? throw new ArgumentNullException(nameof(lexemeLookup));
+            _lexemeProcessor = lexemeProcessor ?? throw new ArgumentNullException(nameof(lexemeProcessor));
 
             //AdvanceBuffer(); //Preload the buffer
         }
@@ -42,23 +41,30 @@ namespace DynamicXml.Scanner.LexemeReader
         {
             //if (_endOfStream)
             //    return EofLexeme;
-
-            var currentState = _lexemeLookup[specifiedLexeme];
+          
             var lexeme = new List<char>();
 
+            //var currentState = _lexemeProcessor[specifiedLexeme];
             //if(currentState is TerminalState)
             //    AdvanceBuffer();
 
-            while (!(currentState is TerminalState))
-            {
-                //TODO: Change this to get the transition function, then move it to the next state.
-                //TODO: Trigger the change for the buffer advancing to whether the function was an
-                //TODO: epsilon edge, not the state type.
-                currentState = currentState.TransitionToNextState(_buffer, lexeme);
+            //while (!(currentState is TerminalState))
+            //{
+            //    //TODO: Change this to get the transition function, then move it to the next state.
+            //    //TODO: Trigger the change for the buffer advancing to whether the function was an
+            //    //TODO: epsilon edge, not the state type.
+            //    currentState = currentState.TransitionToNextState(_buffer, lexeme);
 
-                //if(!(currentState is IBufferPreservingState))
-                //    AdvanceBuffer(); //Always leave the buffer one read ahead if we're not done
-            }
+            //    //if(!(currentState is IBufferPreservingState))
+            //    //    AdvanceBuffer(); //Always leave the buffer one read ahead if we're not done
+            //}
+
+            IState currentState;
+
+            for (currentState = _lexemeProcessor[specifiedLexeme];
+                !(currentState is TerminalState);
+                currentState = _lexemeProcessor.GetNextState(currentState, lexeme))
+            {}
 
             var terminalStateLexeme = new Lexeme(((TerminalState)currentState).Type, new string(lexeme.ToArray()));
 
