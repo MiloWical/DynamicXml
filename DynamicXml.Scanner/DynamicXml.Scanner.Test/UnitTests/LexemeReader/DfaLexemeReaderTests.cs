@@ -58,26 +58,28 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
             }
         }
 
-        //[TestMethod]
-        //public void DfaWhitespaceOnlyLexemeReadingTest()
-        //{
-        //    const string testString = " \t\n  ";
+        [TestMethod]
+        public void DfaWhitespaceOnlyLexemeReadingTest()
+        {
+            const string testString = " \t\n  ";
 
-        //    var expectedLexemes = new[]
-        //    {
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.Eof
-        //    };
+            var expectedLexemes = new[]
+            {
+                LexemeType.WhitespaceSymbol,
+                LexemeType.Eof
+            };
 
-        //    var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1,
-        //        new DfaLexemeProcessor(new DfaStateContainer()));
+            var bufferReader = new StringBufferReader(testString);
 
-        //    foreach (var lexemeType in expectedLexemes)
-        //    {
-        //        var lexeme = reader.GetNextLexemeFromBuffer();
-        //        Assert.AreEqual(lexemeType, lexeme.Type);
-        //    }
-        //}
+            //var lexemeReader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaLexemeProcessor(new DfaStateContainer(),));
+            var lexemeReader = new DfaLexemeReader(new DfaLexemeProcessor(new DfaStateContainer(), bufferReader));
+
+            foreach (var lexemeType in expectedLexemes)
+            {
+                var lexeme = lexemeReader.GetNextLexemeFromBuffer();
+                Assert.AreEqual(lexemeType, lexeme.Type);
+            }
+        }
 
         //[TestMethod]
         //public void XmlPrologLexemeizingTest()

@@ -149,6 +149,8 @@
 
             _initialXmlState = new NonterminalState(new IEdge[]
             {
+                new EpsilonEdge(buffer => buffer == null || _bufferReader.EndOfStream,
+                    () => _stateContainer[nameof(_eofTerminalState)]), 
                 new TransitionEdge(buffer => buffer[0] == ':',
                     () => _stateContainer[nameof(_colonSymbolTerminalState)],
                     _bufferAdvanceAction),
@@ -240,9 +242,10 @@
 
         public IState GetNextState(IState currentState, ICollection<char> currentLexeme)
         {
-            return _bufferReader.EndOfStream
-                ? _stateContainer[LexemeType.Eof.ToString()]
-                : currentState.TransitionToNextState(_bufferReader.Buffer, currentLexeme);
+            //if (_bufferReader.EndOfStream)
+            //    return _stateContainer[LexemeType.Eof.ToString()];
+                
+            return currentState.TransitionToNextState(_bufferReader.Buffer, currentLexeme);
         }
     }
 }
