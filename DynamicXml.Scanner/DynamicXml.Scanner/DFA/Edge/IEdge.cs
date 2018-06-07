@@ -11,7 +11,5 @@ namespace DynamicXml.Scanner.DFA.Edge
     public interface IEdge
     {
         bool Transition(char[] buffer);
-
-        void AdvanceBuffer();
     }
 }

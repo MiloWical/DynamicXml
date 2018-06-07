@@ -44,8 +44,6 @@
 
         private readonly IBufferReader _bufferReader;
 
-        private readonly Action _bufferAdvanceAction;
-
         public static string[] ReservedWords = {
             "version",
             "xmlns"
@@ -55,8 +53,6 @@
         {
             _stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(stateContainer));
             _bufferReader = bufferReader ?? throw new ArgumentNullException(nameof(bufferReader));
-
-            _bufferAdvanceAction = bufferReader.AdvanceBuffer;
 
             InitializeStates();
             BuildLexemeToStateMap();
@@ -107,11 +103,10 @@
 
             _whitespaceSymbolNonterminalState = new NonterminalState(new IEdge[]
             {
-                new TransitionEdge(buffer => buffer != null && char.IsWhiteSpace(buffer[0]),
-                    () => _stateContainer[nameof(_whitespaceSymbolNonterminalState)],
-                    _bufferAdvanceAction),
                 new EpsilonEdge(buffer => buffer == null || !char.IsWhiteSpace(buffer[0]),
-                    () => _stateContainer[nameof(_whitespaceSymbolTerminalState)])
+                    () => _stateContainer[nameof(_whitespaceSymbolTerminalState)]),
+                new TransitionEdge(buffer => buffer != null && char.IsWhiteSpace(buffer[0]),
+                    () => _stateContainer[nameof(_whitespaceSymbolNonterminalState)])
             }, nameof(_whitespaceSymbolNonterminalState));
             _stateContainer.Register(_whitespaceSymbolNonterminalState, nameof(_whitespaceSymbolNonterminalState));
 
@@ -120,8 +115,7 @@
             _identifierNonterminalState = new NonterminalState(new IEdge[]
             {
                 new TransitionEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0]),
-                    () => _stateContainer[nameof(_identifierNonterminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_identifierNonterminalState)]),
                 //TODO: Add a new epsilon edge here that does the reserved word lookup and transition to the appropriate
                 //TODO: terminal state for the reserved lexeme.
                 new EpsilonEdge(
@@ -152,35 +146,25 @@
                 new EpsilonEdge(buffer => buffer == null || _bufferReader.EndOfStream,
                     () => _stateContainer[nameof(_eofTerminalState)]), 
                 new TransitionEdge(buffer => buffer[0] == ':',
-                    () => _stateContainer[nameof(_colonSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_colonSymbolTerminalState)]),
                 new TransitionEdge(buffer => buffer[0] == '"', 
-                    () => _stateContainer[nameof(_doubleQuoteSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_doubleQuoteSymbolTerminalState)]),
                 new TransitionEdge(buffer => buffer[0] == '\'', 
-                    () => _stateContainer[nameof(_singleQuoteSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_singleQuoteSymbolTerminalState)]),
                 new TransitionEdge(buffer => buffer[0] == '=',
-                    () => _stateContainer[nameof(_equalSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_equalSymbolTerminalState)]),
                 new TransitionEdge(buffer => buffer[0] == '/', 
-                    () => _stateContainer[nameof(_slashSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_slashSymbolTerminalState)]),
                 new TransitionEdge(buffer => buffer[0] == '>', 
-                    () => _stateContainer[nameof(_greaterThanSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_greaterThanSymbolTerminalState)]),
                 new TransitionEdge(buffer => buffer[0] == '<', 
-                    () => _stateContainer[nameof(_lessThanSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_lessThanSymbolTerminalState)]),
                 new TransitionEdge(buffer => buffer[0] == '?',
-                    () => _stateContainer[nameof(_questionMarkSymbolTerminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_questionMarkSymbolTerminalState)]),
                 new TransitionEdge(buffer => char.IsWhiteSpace(buffer[0]), 
-                    () => _stateContainer[nameof(_whitespaceSymbolNonterminalState)],
-                    _bufferAdvanceAction),
+                    () => _stateContainer[nameof(_whitespaceSymbolNonterminalState)]),
                 new TransitionEdge(buffer => char.IsLetterOrDigit(buffer[0]) || _identifierCharacters.Contains(buffer[0]), 
-                    () => _stateContainer[nameof(_identifierNonterminalState)],
-                    _bufferAdvanceAction)
+                    () => _stateContainer[nameof(_identifierNonterminalState)])
                 //new TransitionEdge(buffer => char.IsDigit(buffer[0]), _versionNonterminalState)
             });
         }
@@ -242,10 +226,11 @@
 
         public IState GetNextState(IState currentState, ICollection<char> currentLexeme)
         {
-            //if (_bufferReader.EndOfStream)
-            //    return _stateContainer[LexemeType.Eof.ToString()];
-                
-            return currentState.TransitionToNextState(_bufferReader.Buffer, currentLexeme);
+            var nextState = currentState.TransitionToNextState(_bufferReader.Buffer, currentLexeme);
+
+            _bufferReader.AdvanceBuffer();
+
+            return nextState;
         }
     }
 }
