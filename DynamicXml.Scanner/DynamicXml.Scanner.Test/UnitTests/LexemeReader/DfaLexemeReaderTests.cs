@@ -15,7 +15,6 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
     using DynamicXml.Scanner.LexemeReader;
     using Lexeme;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Processor;
 
     #endregion
 
@@ -48,8 +47,7 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
 
             var bufferReader = new StringBufferReader(testString);
 
-            //var lexemeReader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaLexemeProcessor(new DfaStateContainer(),));
-            var lexemeReader = new DfaLexemeReader(new DfaLexemeProcessor(new DfaStateContainer(), bufferReader));
+            var lexemeReader = new DfaLexemeReader(new DefaultDfaStateContainer(bufferReader.AdvanceBuffer), bufferReader);
 
             foreach (var lexemeType in expectedLexemes)
             {
@@ -71,8 +69,7 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
 
             var bufferReader = new StringBufferReader(testString);
 
-            //var lexemeReader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1, new DfaLexemeProcessor(new DfaStateContainer(),));
-            var lexemeReader = new DfaLexemeReader(new DfaLexemeProcessor(new DfaStateContainer(), bufferReader));
+            var lexemeReader = new DfaLexemeReader(new DefaultDfaStateContainer(bufferReader.AdvanceBuffer), bufferReader);
 
             foreach (var lexemeType in expectedLexemes)
             {
@@ -81,56 +78,55 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
             }
         }
 
-        //[TestMethod]
-        //public void XmlPrologLexemeizingTest()
-        //{
-        //    //const string testString = "<?xml version=\"1.0\" encoding='UTF-8'?>";
-        //    const string testString = "<?xml version=\"1.\" encoding='UTF-8'?>";
+        [TestMethod]
+        public void XmlPrologLexemeizingTest()
+        {
+            const string testString = "<?xml version=\"1.0\" encoding='UTF-8'?>";
 
-        //    var expectedLexemes = new[]
-        //    {
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.QuestionMarkSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.EqualSymbol,
-        //        LexemeType.DoubleQuoteSymbol,
-        //        LexemeType.Version,
-        //        LexemeType.DoubleQuoteSymbol,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.EqualSymbol,
-        //        LexemeType.SingleQuoteSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.SingleQuoteSymbol,
-        //        LexemeType.QuestionMarkSymbol,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.Eof
-        //    };
+            var expectedLexemes = new[]
+            {
+                LexemeType.LessThanSymbol,
+                LexemeType.QuestionMarkSymbol,
+                LexemeType.Identifier,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.Identifier,
+                LexemeType.EqualSymbol,
+                LexemeType.DoubleQuoteSymbol,
+                LexemeType.Version,
+                LexemeType.DoubleQuoteSymbol,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.Identifier,
+                LexemeType.EqualSymbol,
+                LexemeType.SingleQuoteSymbol,
+                LexemeType.Identifier,
+                LexemeType.SingleQuoteSymbol,
+                LexemeType.QuestionMarkSymbol,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.Eof
+            };
 
-        //    var expectedIdentifiers = new[]
-        //    {
-        //        "xml",
-        //        "version",
-        //        "encoding",
-        //        "UTF-8"
-        //    };
+            var expectedIdentifiers = new[]
+            {
+                "xml",
+                "version",
+                "encoding",
+                "UTF-8"
+            };
 
-        //    var expectedIdentifierIndex = 0;
+            var expectedIdentifierIndex = 0;
 
-        //    var reader = new DfaLexemeReader(new MemoryStream(Encoding.UTF8.GetBytes(testString)), 1,
-        //        new DfaLexemeProcessor(new DfaStateContainer()));
+            var bufferReader = new StringBufferReader(testString);
+            var lexemeReader = new DfaLexemeReader(new DefaultDfaStateContainer(bufferReader.AdvanceBuffer), bufferReader);
 
-        //    foreach (var lexemeType in expectedLexemes)
-        //    {
-        //        var lexeme = reader.GetNextLexemeFromBuffer(lexemeType);
-        //        Assert.AreEqual(lexemeType, lexeme.Type);
+            foreach (var lexemeType in expectedLexemes)
+            {
+                var lexeme = lexemeReader.GetNextLexemeFromBuffer(lexemeType);
+                Assert.AreEqual(lexemeType, lexeme.Type);
 
-        //        if (lexeme.Type == LexemeType.Identifier)
-        //            Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], lexeme.Literal);
-        //    }
-        //}
+                if (lexeme.Type == LexemeType.Identifier)
+                    Assert.AreEqual(expectedIdentifiers[expectedIdentifierIndex++], lexeme.Literal);
+            }
+        }
 
         //[TestMethod]
         //public void TagParsingTest()

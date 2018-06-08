@@ -15,10 +15,6 @@ using DynamicXml.Scanner.DFA.State;
 
 namespace DynamicXml.Scanner.DFA.Container
 {
-    using System;
-    using Edge;
-    using Lexeme;
-
     /// <summary>
     /// Interface IStateContainer
     /// </summary>

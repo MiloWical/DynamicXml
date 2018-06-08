@@ -1,88 +1,45 @@
 ﻿namespace DynamicXml.Scanner.LexemeReader
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
+    using DFA.BufferReader;
+    using DFA.Container;
     using DFA.State;
     using Lexeme;
-    using Processor;
+    using System;
+    using System.Collections.Generic;
 
     public class DfaLexemeReader : ILexemeReader
     {
-        //private readonly StreamReader _reader;
-        //private char[] _buffer;
-        //private bool _endOfStream;
-        private readonly ILexemeProcessor _lexemeProcessor;
+        private readonly IStateContainer _stateContainer;
+        private readonly IBufferReader _bufferReader;
 
-        //private static readonly Lexeme EofLexeme = new Lexeme(LexemeType.Eof, string.Empty);
+        private static readonly Lexeme EofLexeme = new Lexeme(LexemeType.Eof, string.Empty);
 
-        //public DfaLexemeReader(Stream inputStream, int lookaheadBufferSize, ILexemeLookup lexemeLookup)
-        //{
-        //    if (inputStream == null) throw new ArgumentNullException(nameof(inputStream));
-        //    if (!inputStream.CanRead)
-        //        throw new ArgumentException("The stream could not be read from.", nameof(inputStream));
-
-        //    _reader = new StreamReader(inputStream);
-        //    _buffer = new char[lookaheadBufferSize];
-        //    _endOfStream = false;
-        //    _lexemeLookup = lexemeLookup ?? throw new ArgumentNullException(nameof(lexemeLookup));
-
-        //    AdvanceBuffer(); //Preload the buffer
-        //}
-
-        public DfaLexemeReader(ILexemeProcessor lexemeProcessor)
+        public DfaLexemeReader(IStateContainer stateContainer, IBufferReader bufferReader)
         {
-            _lexemeProcessor = lexemeProcessor ?? throw new ArgumentNullException(nameof(lexemeProcessor));
+            _stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(bufferReader));
+            _bufferReader = bufferReader ?? throw new ArgumentNullException(nameof(bufferReader));
 
-            //AdvanceBuffer(); //Preload the buffer
+            _bufferReader.AdvanceBuffer(); //Preload the buffer
         }
 
         public Lexeme GetNextLexemeFromBuffer(LexemeType specifiedLexeme = LexemeType.Unspecified)
         {
-            //if (_endOfStream)
-            //    return EofLexeme;
-          
+            if (_bufferReader.EndOfStream)
+                return EofLexeme;
+
             var lexeme = new List<char>();
 
-            //var currentState = _lexemeProcessor[specifiedLexeme];
-            //if(currentState is TerminalState)
-            //    AdvanceBuffer();
+            var currentState = _stateContainer[specifiedLexeme.ToString()];
 
-            //while (!(currentState is TerminalState))
-            //{
-            //    //TODO: Change this to get the transition function, then move it to the next state.
-            //    //TODO: Trigger the change for the buffer advancing to whether the function was an
-            //    //TODO: epsilon edge, not the state type.
-            //    currentState = currentState.TransitionToNextState(_buffer, lexeme);
+            if (currentState is TerminalState)
+                _bufferReader.AdvanceBuffer();
 
-            //    //if(!(currentState is IBufferPreservingState))
-            //    //    AdvanceBuffer(); //Always leave the buffer one read ahead if we're not done
-            //}
-
-            IState currentState;
-
-            for (currentState = _lexemeProcessor[specifiedLexeme];
-                !(currentState is TerminalState);
-                currentState = _lexemeProcessor.GetNextState(currentState, lexeme))
-            {}
+            while (!(currentState is TerminalState))
+                currentState = currentState.TransitionToNextState(_bufferReader.Buffer, lexeme);
 
             var terminalStateLexeme = new Lexeme(((TerminalState)currentState).Type, new string(lexeme.ToArray()));
 
             return terminalStateLexeme;
         }
-
-        //private void AdvanceBuffer()
-        //{
-        //    if (_endOfStream) return;
-
-        //    var charactersRead = _reader.Read(_buffer, 0, _buffer.Length);
-
-        //    if (charactersRead > 0) return;
-
-        //    _endOfStream = true;
-        //    _reader.Close();
-        //    _reader.Dispose();
-        //    _buffer = null;
-        //}
     }
 }

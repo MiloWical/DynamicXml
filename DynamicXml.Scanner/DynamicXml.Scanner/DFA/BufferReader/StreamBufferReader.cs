@@ -83,7 +83,7 @@ namespace DynamicXml.Scanner.DFA.BufferReader
             _buffer = new char[lookaheadBufferSize];
             EndOfStream = false;
 
-            AdvanceBuffer(); //Preload the buffer for the first lexeme lookup.
+            //AdvanceBuffer(); //Preload the buffer for the first lexeme lookup.
         }
 
         /// <inheritdoc />
