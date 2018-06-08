@@ -42,7 +42,7 @@ namespace DynamicXml.Scanner.DFA.BufferReader
         /// buffer so that any changes applied to it in the 
         /// client application won't alter the state of
         /// the buffer in the buffer reader.</remarks>
-        public char[] Buffer => (char[]) _buffer.Clone();
+        public char[] Buffer => (char[]) _buffer?.Clone();
 
         /// <inheritdoc />
         /// <summary>
