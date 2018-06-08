@@ -128,112 +128,114 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
             }
         }
 
-        //[TestMethod]
-        //public void TagParsingTest()
-        //{
-        //    const string testString =
-        //        "<Parent attrib=\"New Attribute\">\n\t<Child/>\n\t<Child>Some info</Child><Child id='2'/>\n</Parent>";
+        [TestMethod]
+        public void TagParsingTest()
+        {
+            const string testString =
+                "<Parent attrib=\"New Attribute\">\n\t<Child/>\n\t<Child>Some info</Child><Child id='2'/>\n</Parent>";
 
-        //    var expectedLexemes = new[]
-        //    {
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.EqualSymbol,
-        //        LexemeType.DoubleQuoteSymbol,
-        //        LexemeType.Data,
-        //        LexemeType.DoubleQuoteSymbol,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.SlashSymbol,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.Data,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.SlashSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.EqualSymbol,
-        //        LexemeType.SingleQuoteSymbol,
-        //        LexemeType.Data,
-        //        LexemeType.SingleQuoteSymbol,
-        //        LexemeType.SlashSymbol,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.WhitespaceSymbol,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.SlashSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.Eof
-        //    };
+            var expectedLexemes = new[]
+            {
+                LexemeType.LessThanSymbol,
+                LexemeType.Identifier,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.Identifier,
+                LexemeType.EqualSymbol,
+                LexemeType.DoubleQuoteSymbol,
+                LexemeType.Data,
+                LexemeType.DoubleQuoteSymbol,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.LessThanSymbol,
+                LexemeType.Identifier,
+                LexemeType.SlashSymbol,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.LessThanSymbol,
+                LexemeType.Identifier,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.Data,
+                LexemeType.LessThanSymbol,
+                LexemeType.SlashSymbol,
+                LexemeType.Identifier,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.LessThanSymbol,
+                LexemeType.Identifier,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.Identifier,
+                LexemeType.EqualSymbol,
+                LexemeType.SingleQuoteSymbol,
+                LexemeType.Data,
+                LexemeType.SingleQuoteSymbol,
+                LexemeType.SlashSymbol,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.WhitespaceSymbol,
+                LexemeType.LessThanSymbol,
+                LexemeType.SlashSymbol,
+                LexemeType.Identifier,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.Eof
+            };
 
-        //    var expectedLiterals = new[]
-        //    {
-        //        "Parent",
-        //        "attrib",
-        //        "New Attribute",
-        //        "Child",
-        //        "Child",
-        //        "Some info",
-        //        "Child",
-        //        "Child",
-        //        "id",
-        //        "2",
-        //        "Parent"
-        //    };
+            var expectedLiterals = new[]
+            {
+                "Parent",
+                "attrib",
+                "New Attribute",
+                "Child",
+                "Child",
+                "Some info",
+                "Child",
+                "Child",
+                "id",
+                "2",
+                "Parent"
+            };
 
-        //    var expectedIdentifierIndex = 0;
+            var expectedIdentifierIndex = 0;
 
-        //    var reader = new RegexLexemeReader(testString);
+            var bufferReader = new StringBufferReader(testString);
+            var lexemeReader = new DfaLexemeReader(new DefaultDfaStateContainer(bufferReader.AdvanceBuffer), bufferReader);
 
-        //    foreach (var lexemeType in expectedLexemes)
-        //    {
-        //        var lexeme = reader.GetNextLexemeFromBuffer(lexemeType);
-        //        Assert.AreEqual(lexemeType, lexeme.Type);
+            foreach (var lexemeType in expectedLexemes)
+            {
+                var lexeme = lexemeReader.GetNextLexemeFromBuffer(lexemeType);
+                Assert.AreEqual(lexemeType, lexeme.Type);
 
-        //        if (lexeme.Type == LexemeType.Identifier ||
-        //            lexeme.Type == LexemeType.Data)
-        //            Assert.AreEqual(expectedLiterals[expectedIdentifierIndex++], lexeme.Literal);
-        //    }
-        //}
+                if (lexeme.Type == LexemeType.Identifier ||
+                    lexeme.Type == LexemeType.Data)
+                    Assert.AreEqual(expectedLiterals[expectedIdentifierIndex++], lexeme.Literal);
+            }
+        }
 
-        //[TestMethod]
-        //public void CommentParsingTest()
-        //{
-        //    const string testString =
-        //        "<!--Comment--><tag><!-- New Comment with <tag> and \t\n\t some whitespace --></tag>";
+        [TestMethod]
+        public void CommentParsingTest()
+        {
+            const string testString =
+                "<!--Comment--><tag><!-- New Comment with <tag> and \t\n\t some whitespace --></tag>";
 
-        //    var expectedLexemes = new[]
-        //    {
-        //        LexemeType.Comment,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.Comment,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.SlashSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.GreaterThanSymbol
-        //    };
+            var expectedLexemes = new[]
+            {
+                LexemeType.Comment,
+                LexemeType.LessThanSymbol,
+                LexemeType.Identifier,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.Comment,
+                LexemeType.LessThanSymbol,
+                LexemeType.SlashSymbol,
+                LexemeType.Identifier,
+                LexemeType.GreaterThanSymbol
+            };
 
-        //    var reader = new RegexLexemeReader(testString);
+            var bufferReader = new StringBufferReader(testString);
+            var lexemeReader = new DfaLexemeReader(new DefaultDfaStateContainer(bufferReader.AdvanceBuffer), bufferReader);
 
-        //    foreach (var lexemeType in expectedLexemes)
-        //    {
-        //        var lexeme = reader.GetNextLexemeFromBuffer(lexemeType);
-        //        Assert.AreEqual(lexemeType, lexeme.Type);
-        //    }
-        //}
+            foreach (var lexemeType in expectedLexemes)
+            {
+                var lexeme = lexemeReader.GetNextLexemeFromBuffer(lexemeType);
+                Assert.AreEqual(lexemeType, lexeme.Type);
+            }
+        }
 
         //[TestMethod]
         //public void CDataParsingTest()
