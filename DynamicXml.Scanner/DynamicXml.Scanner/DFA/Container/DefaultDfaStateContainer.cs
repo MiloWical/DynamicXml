@@ -26,13 +26,24 @@
         private static IState _identifierTerminalState;
         private static IState _versionTerminalState;
         private static IState _dataTerminalState;
+        private static IState _cDataTerminalState;
 
         private static IState _commentStartNonterminalState;
-        private static IState _commentStartNonterminalStatePrime1;
-        private static IState _commentStartNonterminalStatePrime2;
         private static IState _commentBodyNonterminalState;
         private static IState _commentEndNonterminalState;
         private static IState _commentEndNonterminalStatePrime;
+
+        private static IState _cDataStartNonterminalState;
+        private static IState _cDataStartNonterminalStatePrime1;
+        private static IState _cDataStartNonterminalStatePrime2;
+        private static IState _cDataStartNonterminalStatePrime3;
+        private static IState _cDataStartNonterminalStatePrime4;
+        private static IState _cDataStartNonterminalStatePrime5;
+        private static IState _cDataBodyNonterminalState;
+        private static IState _cDataEndNonterminalState;
+        private static IState _cDataEndNonterminalStatePrime;
+
+        private static IState _characterDataNonterminalState;
 
         private static IState _whitespaceSymbolNonterminalState;
 
@@ -170,40 +181,32 @@
 
             _lessThanSymbolNonterminalStatePrime = new NonterminalState(new IEdge[]
             {
-                new EpsilonEdge(buffer => buffer[0] == '!',
-                    () => this[nameof(_commentStartNonterminalState)]),
+                new TransitionEdge(buffer => buffer[0] == '!',
+                    () => this[nameof(_characterDataNonterminalState)],
+                    _bufferAdvanceAction),
                 new EpsilonEdge(buffer => true, //We've already seen a '<' symbol - no need to reprocess
                     () => this[nameof(_lessThanSymbolTerminalState)]) 
             }, nameof(_lessThanSymbolNonterminalStatePrime));
             Register(_lessThanSymbolNonterminalStatePrime, nameof(_lessThanSymbolNonterminalStatePrime));
 
-            _commentStartNonterminalState = new NonterminalState(new IEdge[]
-            {
-                new TransitionEdge(buffer => buffer[0] == '!',
-                    () => this[nameof(_commentStartNonterminalStatePrime1)],
-                    _bufferAdvanceAction),
-                new EpsilonEdge(buffer => buffer[0] != '!',
-                    () => this[nameof(_lessThanSymbolTerminalState)])
-            }, nameof(_commentStartNonterminalState));
-            Register(_commentStartNonterminalState, nameof(_commentStartNonterminalState));
-
-            _commentStartNonterminalStatePrime1 = new NonterminalState(new IEdge[]
+            _characterDataNonterminalState = new NonterminalState(new IEdge[]
             {
                 new TransitionEdge(buffer => buffer[0] == '-',
-                    () => this[nameof(_commentStartNonterminalStatePrime2)],
+                    () => this[nameof(_commentStartNonterminalState)],
                     _bufferAdvanceAction),
-                new EpsilonEdge(buffer => buffer[0] != '-',
-                    () => this[nameof(_lessThanSymbolTerminalState)])
-            }, nameof(_commentStartNonterminalStatePrime1));
-            Register(_commentStartNonterminalStatePrime1, nameof(_commentStartNonterminalStatePrime1));
+                new TransitionEdge(buffer => buffer[0] == '[',
+                    () => this[nameof(_cDataStartNonterminalState)],
+                    _bufferAdvanceAction)
+            }, nameof(_characterDataNonterminalState));
+            Register(_characterDataNonterminalState, nameof(_characterDataNonterminalState));
 
-            _commentStartNonterminalStatePrime2 = new NonterminalState(new IEdge[]
+            _commentStartNonterminalState = new NonterminalState(new IEdge[]
             {
                 new TransitionEdge(buffer => buffer[0] == '-',
                     () => this[nameof(_commentBodyNonterminalState)],
                     _bufferAdvanceAction) 
-            }, nameof(_commentStartNonterminalStatePrime2));
-            Register(_commentStartNonterminalStatePrime2, nameof(_commentStartNonterminalStatePrime2));
+            }, nameof(_commentStartNonterminalState));
+            Register(_commentStartNonterminalState, nameof(_commentStartNonterminalState));
 
             _commentBodyNonterminalState = new NonterminalState(new IEdge[]
             {
@@ -237,6 +240,90 @@
                     _bufferAdvanceAction)
             }, nameof(_commentEndNonterminalStatePrime));
             Register(_commentEndNonterminalStatePrime, nameof(_commentEndNonterminalStatePrime));
+
+            _cDataStartNonterminalState = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer[0] == 'C',
+                    () => this[nameof(_cDataStartNonterminalStatePrime1)],
+                    _bufferAdvanceAction) 
+            }, nameof(_cDataStartNonterminalState));
+            Register(_cDataStartNonterminalState, nameof(_cDataStartNonterminalState));
+
+            _cDataStartNonterminalStatePrime1 = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer[0] == 'D',
+                    () => this[nameof(_cDataStartNonterminalStatePrime2)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataStartNonterminalStatePrime1));
+            Register(_cDataStartNonterminalStatePrime1, nameof(_cDataStartNonterminalStatePrime1));
+
+            _cDataStartNonterminalStatePrime2 = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer[0] == 'A',
+                    () => this[nameof(_cDataStartNonterminalStatePrime3)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataStartNonterminalStatePrime2));
+            Register(_cDataStartNonterminalStatePrime2, nameof(_cDataStartNonterminalStatePrime2));
+
+            _cDataStartNonterminalStatePrime3 = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer[0] == 'T',
+                    () => this[nameof(_cDataStartNonterminalStatePrime4)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataStartNonterminalStatePrime3));
+            Register(_cDataStartNonterminalStatePrime3, nameof(_cDataStartNonterminalStatePrime3));
+
+            _cDataStartNonterminalStatePrime4 = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer[0] == 'A',
+                    () => this[nameof(_cDataStartNonterminalStatePrime5)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataStartNonterminalStatePrime4));
+            Register(_cDataStartNonterminalStatePrime4, nameof(_cDataStartNonterminalStatePrime4));
+
+            _cDataStartNonterminalStatePrime5 = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer[0] == '[',
+                    () => this[nameof(_cDataBodyNonterminalState)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataStartNonterminalStatePrime5));
+            Register(_cDataStartNonterminalStatePrime5, nameof(_cDataStartNonterminalStatePrime5));
+
+            _cDataBodyNonterminalState = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer != null && buffer[0] == ']',
+                    () => this[nameof(_cDataEndNonterminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer != null,
+                    () => this[nameof(_cDataBodyNonterminalState)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataBodyNonterminalState));
+            Register(_cDataBodyNonterminalState, nameof(_cDataBodyNonterminalState));
+
+            _cDataEndNonterminalState = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer != null && buffer[0] == ']',
+                    () => this[nameof(_cDataEndNonterminalStatePrime)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer != null,
+                    () => this[nameof(_cDataBodyNonterminalState)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataEndNonterminalState));
+            Register(_cDataEndNonterminalState, nameof(_cDataEndNonterminalState));
+
+            _cDataEndNonterminalStatePrime = new NonterminalState(new IEdge[]
+            {
+                new TransitionEdge(buffer => buffer != null && buffer[0] == '>',
+                    () => this[nameof(_cDataTerminalState)],
+                    _bufferAdvanceAction),
+                new TransitionEdge(buffer => buffer != null,
+                    () => this[nameof(_cDataBodyNonterminalState)],
+                    _bufferAdvanceAction)
+            }, nameof(_cDataEndNonterminalStatePrime));
+            Register(_cDataEndNonterminalStatePrime, nameof(_cDataEndNonterminalStatePrime));
+
+            _cDataTerminalState = new TerminalState(LexemeType.CData, nameof(_cDataTerminalState));
+            Register(_cDataTerminalState, nameof(_cDataTerminalState));
 
             _eofTerminalState = new TerminalState(LexemeType.Eof, nameof(_eofTerminalState));
             Register(_eofTerminalState, nameof(_eofTerminalState));
@@ -287,7 +374,7 @@
             Register(_initialXmlState, LexemeType.Unspecified.ToString());
             Register(null, LexemeType.Undefined.ToString());
             Register(_lessThanSymbolNonterminalState, LexemeType.Comment.ToString());
-            //Register(???, LexemeType.CData.ToString());
+            Register(_lessThanSymbolNonterminalState, LexemeType.CData.ToString());
             Register(_lessThanSymbolNonterminalState, LexemeType.LessThanSymbol.ToString());
             Register(_greaterThanSymbolTerminalState, LexemeType.GreaterThanSymbol.ToString());
             Register(_slashSymbolTerminalState, LexemeType.SlashSymbol.ToString());

@@ -237,32 +237,32 @@ namespace DynamicXml.Scanner.Test.UnitTests.LexemeReader
             }
         }
 
-        //[TestMethod]
-        //public void CDataParsingTest()
-        //{
-        //    const string testString =
-        //        "<!--Comment with <![CDATA ]]> --><tag><![CDATA[New character\ndata with a <tag>]]></tag>";
+        [TestMethod]
+        public void CDataParsingTest()
+        {
+            const string testString =
+                "<!--Comment with <![CDATA ]]> --><tag><![CDATA[New character\ndata with a <tag>]]></tag>";
 
-        //    var expectedLexemes = new[]
-        //    {
-        //        LexemeType.Comment,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.GreaterThanSymbol,
-        //        LexemeType.CData,
-        //        LexemeType.LessThanSymbol,
-        //        LexemeType.SlashSymbol,
-        //        LexemeType.Identifier,
-        //        LexemeType.GreaterThanSymbol
-        //    };
+            var expectedLexemes = new[]
+            {
+                LexemeType.Comment,
+                LexemeType.LessThanSymbol,
+                LexemeType.Identifier,
+                LexemeType.GreaterThanSymbol,
+                LexemeType.CData,
+                LexemeType.LessThanSymbol,
+                LexemeType.SlashSymbol,
+                LexemeType.Identifier,
+                LexemeType.GreaterThanSymbol
+            };
 
-        //    var reader = new RegexLexemeReader(testString);
+            var reader = new RegexLexemeReader(testString);
 
-        //    foreach (var lexemeType in expectedLexemes)
-        //    {
-        //        var lexeme = reader.GetNextLexemeFromBuffer(lexemeType);
-        //        Assert.AreEqual(lexemeType, lexeme.Type);
-        //    }
-        //}
+            foreach (var lexemeType in expectedLexemes)
+            {
+                var lexeme = reader.GetNextLexemeFromBuffer(lexemeType);
+                Assert.AreEqual(lexemeType, lexeme.Type);
+            }
+        }
     }
 }
