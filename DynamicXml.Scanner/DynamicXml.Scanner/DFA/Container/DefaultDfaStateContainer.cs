@@ -19,6 +19,7 @@
         private static IState _lessThanSymbolTerminalState;
         private static IState _questionMarkSymbolTerminalState;
 
+        private static IState _lessThanSymbolNonterminalState;
         private static IState _commentTerminalState;
         private static IState _whitespaceSymbolTerminalState;
         private static IState _identifierTerminalState;
@@ -159,11 +160,19 @@
             }, nameof(_dataNonterminalState));
             Register(_dataNonterminalState, nameof(_dataNonterminalState));
 
+            _lessThanSymbolNonterminalState = new NonterminalState(new IEdge[]
+            {
+                new EpsilonEdge(buffer => buffer[0] == '!',
+                    () => this[nameof(_commentStartNonterminalState)]),
+                new EpsilonEdge(buffer => true, //We've already seen a '<' symbol - no need to reprocess
+                    () => this[nameof(_lessThanSymbolTerminalState)]) 
+            }, nameof(_lessThanSymbolNonterminalState));
+            Register(_lessThanSymbolNonterminalState, nameof(_lessThanSymbolNonterminalState));
+
             _commentStartNonterminalState = new NonterminalState(new IEdge[]
             {
-                new TransitionEdge(buffer => buffer[0] == '<', 
-                    () => this[nameof(_commentStartNonterminalStatePrime1)],
-                    _bufferAdvanceAction) 
+                new EpsilonEdge(buffer => buffer[0] == '!', 
+                    () => this[nameof(_commentStartNonterminalStatePrime1)]) 
             }, nameof(_commentStartNonterminalState));
             Register(_commentStartNonterminalState, nameof(_commentStartNonterminalState));
 
@@ -278,7 +287,7 @@
             Register(null, LexemeType.Undefined.ToString());
             Register(_commentStartNonterminalState, LexemeType.Comment.ToString());
             //Register(???, LexemeType.CData.ToString());
-            Register(_commentStartNonterminalState, LexemeType.LessThanSymbol.ToString());
+            Register(_lessThanSymbolNonterminalState, LexemeType.LessThanSymbol.ToString());
             Register(_greaterThanSymbolTerminalState, LexemeType.GreaterThanSymbol.ToString());
             Register(_slashSymbolTerminalState, LexemeType.SlashSymbol.ToString());
             Register(_equalSymbolTerminalState, LexemeType.EqualSymbol.ToString());
